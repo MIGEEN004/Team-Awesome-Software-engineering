@@ -6,8 +6,8 @@ This project is a dynamic, database-driven web application designed to foster a 
 
 ## Group Details
 
-**Group Name**: Team Awsome
-**Module**: CMP-N204-0 Software Engineering 
+* **Group Name**: Team Awsome
+* **Module**: CMP-N204-0 Software Engineering 
 
 **University**: University of Roehampton 
 
@@ -22,21 +22,13 @@ This project is a dynamic, database-driven web application designed to foster a 
 
 This application is built using the approved module technology stack:
 
-* 
-**Frontend**: HTML, CSS, JavaScript, and the PUG templating system .
+* **Frontend**: HTML, CSS, JavaScript, and the PUG templating system .
 
+* **Backend**: Node.js and Express.js .
 
-* 
-**Backend**: Node.js and Express.js .
+* **Database**: MySQL.
 
-
-* 
-**Database**: MySQL.
-
-
-* 
-**DevOps**: Docker for containerization and GitHub Actions for CI/CD .
-
+* **DevOps**: Docker for containerization and GitHub Actions for CI/CD .
 
 
 ## Getting Started
