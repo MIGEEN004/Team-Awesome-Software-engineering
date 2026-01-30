@@ -6,12 +6,9 @@ This project is a dynamic, database-driven web application designed to foster a 
 
 ## Group Details
 
-* **Group Name**: Team Awsome
-* 
+**Group Name**: Team Awsome
 **Module**: CMP-N204-0 Software Engineering 
 
-
-* 
 **University**: University of Roehampton 
 
 
@@ -19,7 +16,6 @@ This project is a dynamic, database-driven web application designed to foster a 
 * Leah Gokani
 * Fuad Hasan Noyon
 * Migeen Magar
-
 
 
 ## Technology Stack
