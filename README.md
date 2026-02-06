@@ -16,7 +16,7 @@ This project is a dynamic, database-driven web application designed to foster a 
 * Leah Gokani
 * Fuad Hasan Noyon
 * Migeen Magar
-
+* Keeley Sheridan
 
 ## Technology Stack
 
