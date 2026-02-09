@@ -56,8 +56,8 @@ docker-compose up --build
 
 
 3. **Access the Application**:
-* **Web Application**: View the site at [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000).
-* **phpMyAdmin**: Manage the database at [http://localhost:8081](https://www.google.com/search?q=http://localhost:8081).
+* **Web Application**: View the site at [http://localhost:3000](http://127.0.0.1:3000/).
+* **phpMyAdmin**: Manage the database at [http://localhost:8081](http://127.0.0.1:8081).
 
 
 
