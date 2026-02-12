@@ -72,4 +72,4 @@ We use the **Scrum methodology** to deliver this project iteratively.
 
 ---
 
-*Last updated for Sprint 1. Further features and documentation will be added as development progresses.*
+*Last updated for Sprint 2. Further features and documentation will be added as development progresses.*
