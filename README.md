@@ -73,3 +73,32 @@ We use the **Scrum methodology** to deliver this project iteratively.
 ---
 
 *Last updated for Sprint 2. Further features and documentation will be added as development progresses.*
+classDiagram
+    class User {
+        +int userId
+        +string username
+        -string password
+        +string email
+        +register()
+        +login()
+    }
+    class Game {
+        +int gameId
+        +string title
+        +string platform
+    }
+    class Tip {
+        +int tipId
+        +string title
+        +string content
+        +upvote()
+    }
+    class Comment {
+        +int commentId
+        +string text
+        +postComment()
+    }
+    User "1" -- "*" Tip : authors
+    User "1" -- "*" Comment : writes
+    Game "1" -- "*" Tip : categorizes
+    Tip "1" -- "*" Comment : contains
