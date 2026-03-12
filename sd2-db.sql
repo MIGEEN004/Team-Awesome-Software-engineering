@@ -1,52 +1,70 @@
--- Drop tables if they exist (to ensure a clean slate)
-DROP TABLE IF EXISTS `posts`;
-DROP TABLE IF EXISTS `users`;
-DROP TABLE IF EXISTS `games`;
+-- 1. Drop tables in reverse order to prevent Foreign Key errors
+DROP TABLE IF EXISTS `Tips`;
+DROP TABLE IF EXISTS `Games`;
+DROP TABLE IF EXISTS `Categories`;
+DROP TABLE IF EXISTS `Users`;
 
--- Create the Games table
-CREATE TABLE `games` (
+-- 2. Users Table (Combining your new auth fields with the profile structure)
+CREATE TABLE `Users` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `platform` varchar(100) NOT NULL,
-  `category` varchar(100) NOT NULL,
+  `username` varchar(50) NOT NULL UNIQUE,
+  `email` varchar(100) NOT NULL UNIQUE,
+  `password` varchar(100) NOT NULL,
+  `bio` varchar(250) DEFAULT NULL,
+  `date_joined` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Create the Users table
-CREATE TABLE `users` (
+-- 3. Categories Table (From your custom schema)
+CREATE TABLE `Categories` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `bio` text,
-  `date_joined` date NOT NULL,
+  `category_name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Create the Posts table (Linked to Users)
-CREATE TABLE `posts` (
+-- 4. Games Table (Your 'Listing' table, renamed to match your Node models)
+CREATE TABLE `Games` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int NOT NULL,
-  `title` varchar(255) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `platform` varchar(50) DEFAULT NULL,
+  `category_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`user_id`) REFERENCES `Users`(`id`)
+  FOREIGN KEY (`category_id`) REFERENCES `Categories`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
--- INSERT DUMMY DATA FOR SPRINT 3
--- --------------------------------------------------------
+-- 5. Tips Table (Your custom Tip table, replacing the old 'Posts' concept)
+CREATE TABLE `Tips` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL,
+  `content` text NOT NULL,
+  `votes` int DEFAULT 0,
+  `date_created` datetime DEFAULT CURRENT_TIMESTAMP,
+  `user_id` int NOT NULL,
+  `game_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `Users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`game_id`) REFERENCES `Games`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Inserting Community-Focused Games
-INSERT INTO `games` (`title`, `platform`, `category`) VALUES
-('Stardew Valley', 'PC', 'Simulation/Co-op'),
-('It Takes Two', 'PlayStation', 'Co-op Adventure'),
-('Animal Crossing', 'Nintendo Switch', 'Community Building');
+-- ==========================================
+-- SPRINT 3: INSERTING DUMMY COMMUNITY DATA
+-- ==========================================
 
--- Inserting Dummy Users
-INSERT INTO `users` (`name`, `bio`, `date_joined`) VALUES
-('Ada Lovelace', 'Love sharing co-op games and building communities!', '2026-01-15'),
-('Alan Turing', 'Always looking for a new puzzle game partner.', '2026-02-20');
+INSERT INTO `Users` (`username`, `email`, `password`, `bio`) VALUES
+('AdaLovelace', 'ada@example.com', 'hashed_pass_1', 'Love sharing co-op games and building communities!'),
+('AlanTuring', 'alan@example.com', 'hashed_pass_2', 'Always looking for a new puzzle game partner.');
 
--- Inserting Dummy Posts for the User Profile
-INSERT INTO `posts` (`user_id`, `title`) VALUES
-(1, 'Anyone want to start a new Stardew farm together?'),
-(1, 'Top 10 Couch Co-op Games for this weekend'),
-(2, 'Looking for an It Takes Two partner!');
+INSERT INTO `Categories` (`category_name`) VALUES
+('Simulation/Co-op'), 
+('Co-op Adventure'), 
+('Community Building');
+
+INSERT INTO `Games` (`title`, `platform`, `category_id`) VALUES
+('Stardew Valley', 'PC', 1),
+('It Takes Two', 'PlayStation', 2),
+('Animal Crossing', 'Nintendo Switch', 3);
+
+INSERT INTO `Tips` (`title`, `content`, `votes`, `user_id`, `game_id`) VALUES
+('Best crops for Year 1?', 'Make sure to plant plenty of strawberries in Spring to maximize your community fund!', 15, 1, 1),
+('How to beat the vacuum boss', 'Communication is key! One person sucks, the other aims.', 20, 2, 2),
+('Looking for a Stardew Farm partner!', 'I usually play evenings on PC. Add me!', 5, 1, 1);
