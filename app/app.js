@@ -1,68 +1,45 @@
-// Import express.js
-const express = require("express");
+// 1. Import Express and initialize the app
+const express = require('express');
+const app = express();
 
-// Create express app
-var app = express();
+// 2. Import your models
+const { User } = require('./models/user');
+const { Game } = require('./models/game');
 
-// Add static files location
-app.use(express.static("static"));
-
-// Use the Pug templating engine
-app.set('view engine', 'pug');
+// 3. Configure the View Engine (PUG)
+// This tells Express to use PUG and look in the 'app/views' folder
 app.set('views', './app/views');
+app.set('view engine', 'pug');
 
-// Get the functions in the db.js file to use
-const db = require('./services/db');
-
-
-// Create a route for root - /
-app.get("/", function(req, res) {
-    res.render("index");
+// 4. Define your Routes (Our Community Endpoints)
+app.get('/', function(req, res) {
+    res.render('index');
 });
 
-
-
-//User profile page
-const { User } = require("./models/user.js");
-
-app.get("/user-profile/:id", async function (req, res) {
-    var userId = req.params.id;
-    
-    // Create the user object
-    var user = new User(userId);
-    
-    // Use the model methods to get data
-    await user.getUserDetails();
-    var posts = await user.getFeaturedPosts();
-    
-    // Render the pug template
-    res.render('user-profile', {
-        user: user,
-        posts: posts
-    });
+app.get('/games', async function(req, res) {
+    try {
+        const gamesData = await Game.getAllGames();
+        res.render('games-listing', { heading: 'Community Game Library', data: gamesData });
+    } catch (err) {
+        console.error("Error fetching games:", err);
+        res.status(500).send("Error loading the community library");
+    }
 });
 
-
-
-//Game listing page
-// 1. Import the Game model
-const { Game } = require("./models/game.js");
-
-// 2. Update the listing route
-app.get("/games-listing", async function(req, res) {
-    // We call the static method from our Model
-    const games = await Game.getAllGames();
-    
-    
-    // Pass the array of Game objects to the view
-    res.render("games-listing", {
-        title: "Games Hub",
-        heading: "All Game Discussions",
-        data: games
-    });
+app.get('/profile/:id', async function(req, res) {
+    try {
+        const userId = req.params.id;
+        const user = new User(userId);
+        
+        await user.getUserDetails();
+        const featuredPosts = await user.getFeaturedPosts();
+        
+        res.render('user-profile', { user: user, posts: featuredPosts });
+    } catch (err) {
+        console.error("Error fetching profile:", err);
+        res.status(500).send("Error loading user profile");
+    }
 });
 
-// Start server on port 3000
-app.listen(3000,function(){
-    console.log(`Server running at http://127.0.0.1:3000/`);
-});
+// 5. Export the app so your index.js file can start the server
+module.exports = app;
