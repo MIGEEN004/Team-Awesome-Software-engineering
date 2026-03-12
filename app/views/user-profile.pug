@@ -1,0 +1,23 @@
+extends layout
+
+block content
+    .profile-container
+        //- Left Side: Profile Info
+        .profile-left
+            .profile-pic-circle
+                p Profile Picture
+            
+            .name-box
+                h2 #{user.name}
+            
+            .bio-box
+                p Date Joined: #{user.date_joined}
+                p Bio: #{user.bio}
+
+        //- Right Side: Featured Posts (The Listing part)
+        .profile-right
+            .featured-posts-container
+                h3 Feature Posts
+                each post in posts
+                    .post-item
+                        p #{post.title}
