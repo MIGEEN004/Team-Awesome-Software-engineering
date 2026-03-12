@@ -15,6 +15,7 @@ This project is a dynamic, database-driven web application designed to foster a 
 * **Members**:
 * Leah Gokani
 * Fuad Hasan Noyon
+* Migeen Magar
 
 
 ## Technology Stack
@@ -55,8 +56,8 @@ docker-compose up --build
 
 
 3. **Access the Application**:
-* **Web Application**: View the site at [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000).
-* **phpMyAdmin**: Manage the database at [http://localhost:8081](https://www.google.com/search?q=http://localhost:8081).
+* **Web Application**: View the site at [http://localhost:3000](http://127.0.0.1:3000/).
+* **phpMyAdmin**: Manage the database at [http://localhost:8081](http://127.0.0.1:8081).
 
 
 
@@ -71,4 +72,4 @@ We use the **Scrum methodology** to deliver this project iteratively.
 
 ---
 
-*Last updated for Sprint 1. Further features and documentation will be added as development progresses.*
+*Last updated for Sprint 2. Further features and documentation will be added as development progresses.*
