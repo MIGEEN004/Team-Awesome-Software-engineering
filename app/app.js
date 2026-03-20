@@ -1,45 +1,59 @@
-// 1. Import Express and initialize the app
-const express = require('express');
-const app = express();
+// Import express.js
+const express = require("express");
 
-// 2. Import your models
-const { User } = require('./models/user');
-const { Game } = require('./models/game');
+// Create express app
+var app = express();
 
-// 3. Configure the View Engine (PUG)
-// This tells Express to use PUG and look in the 'app/views' folder
-app.set('views', './app/views');
+// Add static files location
+app.use(express.static("static"));
+
+// Use the Pug templating engine
 app.set('view engine', 'pug');
+app.set('views', './app/views');
 
-// 4. Define your Routes (Our Community Endpoints)
-app.get('/', function(req, res) {
-    res.render('index');
+// Get the functions in the db.js file to use
+const db = require('./services/db');
+
+// Get the gaming models
+const { User } = require("./models/user");
+const { Listing } = require("./models/listing");
+
+// Create a route for root - /
+app.get("/", function(req, res) {
+    res.render("index");
 });
 
-app.get('/games', async function(req, res) {
+// Task: Display a formatted list of all games (The Listing Page)
+// UPDATED: Using async/await for better error handling and consistency
+app.get("/all-listings", async function(req, res) {
     try {
-        const gamesData = await Game.getAllGames();
-        res.render('games-listing', { heading: 'Community Game Library', data: gamesData });
+        var sql = 'select * from Listing';
+        // Wait for the database to return results
+        const results = await db.query(sql);
+        
+        // Send the results to the all-listings template
+        res.render('all-listings', {data: results});
     } catch (err) {
-        console.error("Error fetching games:", err);
-        res.status(500).send("Error loading the community library");
+        console.error("Error fetching listings:", err);
+        res.status(500).send("Database Error");
     }
 });
 
-app.get('/profile/:id', async function(req, res) {
-    try {
-        const userId = req.params.id;
-        const user = new User(userId);
-        
-        await user.getUserDetails();
-        const featuredPosts = await user.getFeaturedPosts();
-        
-        res.render('user-profile', { user: user, posts: featuredPosts });
-    } catch (err) {
-        console.error("Error fetching profile:", err);
-        res.status(500).send("Error loading user profile");
-    }
+// Shows the user's name, bio, date joined, and their "Featured Posts" (Tips)
+app.get("/user-profile/:id", async function (req, res) {
+    var uId = req.params.id;
+    
+    // Create a user class with the ID passed
+    var user = new User(uId);
+    
+    await user.getUserDetails(); // Gets name, bio, date_joined
+    await user.getUserTips();    // Gets the posts for the right-hand side
+    
+    console.log(user);
+    res.render('user-profile', {user: user});
 });
 
-// 5. Export the app so your index.js file can start the server
-module.exports = app;
+// Start server on port 3000
+app.listen(3000, function(){
+    console.log(`Server running at http://127.0.0.1:3000/`);
+});

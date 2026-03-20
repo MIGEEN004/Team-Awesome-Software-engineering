@@ -1,23 +1,22 @@
 extends layout
 
 block content
-    .profile-container
-        //- Left Side: Profile Info
-        .profile-left
-            .profile-pic-circle
-                p Profile Picture
-            
-            .name-box
-                h2 #{user.name}
-            
-            .bio-box
-                p Date Joined: #{user.date_joined}
-                p Bio: #{user.bio}
+  //- Layout matching your wireframe
+  div(style="display: flex; gap: 20px;")
+    section(style="flex: 1; border: 1px solid black; padding: 10px;")
+      //- Profile Section
+      div(style="width: 100px; height: 100px; border-radius: 50%; border: 1px solid black; margin-bottom: 10px; display: flex; align-items: center; justify-content: center;") Pic
+      h1 #{user.username}
+      div(style="border: 1px solid black; padding: 10px; margin-top: 10px;")
+        p **Date Joined:** #{user.dateJoined}
+        p **Bio:** #{user.bio}
 
-        //- Right Side: Featured Posts (The Listing part)
-        .profile-right
-            .featured-posts-container
-                h3 Feature Posts
-                each post in posts
-                    .post-item
-                        p #{post.title}
+    section(style="flex: 1; border: 1px solid black; padding: 10px;")
+      h2 Featured Posts
+      if user.tips.length > 0
+        each tip in user.tips
+          div(style="border: 1px solid black; margin-bottom: 10px; padding: 10px;")
+            h3 #{tip.tip_title}
+            p #{tip.tip_content}
+      else
+        p No posts available for this user.

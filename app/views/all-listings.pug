@@ -1,0 +1,74 @@
+extends layout
+
+block content
+  style.
+    .search-section {
+      background-color: #3b5998; 
+      padding: 20px;
+      color: white;
+      border-bottom: 3px solid #edc967;
+    }
+    .search-input {
+      width: 70%;
+      padding: 8px;
+      border-radius: 4px;
+      border: none;
+    }
+    .btn-search {
+      padding: 8px 20px;
+      background-color: #768dcd;
+      color: white;
+      border: none;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .filter-btn {
+      background: #e2e2e2;
+      border: 1px solid #ccc;
+      margin: 5px;
+      padding: 5px 15px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+    }
+    th {
+      background-color: #eff3f6;
+      color: #3b5998;
+      padding: 12px;
+      border: 1px solid #dcdcdc;
+      text-align: left;
+    }
+    td {
+      padding: 12px;
+      border: 1px solid #dcdcdc;
+    }
+    tr:hover {
+      background-color: #f0f7ff;
+    }
+
+  .search-section
+    input.search-input(type="text" placeholder="Search Game Titles...")
+    button.btn-search Search
+    .advance-search(style="margin-top: 15px;")
+      span(style="font-weight: bold;") Advance Search: 
+      button.filter-btn Game 
+      button.filter-btn Platform 
+      button.filter-btn Type
+
+  .container(style="padding: 20px;")
+    h2(style="color: #333;") Search Results
+    table
+      thead
+        tr
+          th Game Name
+          th Platform
+      tbody
+        for item in data
+          tr
+            td 
+
+              a(href='/listing-single/' + item.GameID, style="color: #3b5998; font-weight: bold; text-decoration: none;") #{item.game_name}
+            td #{item.platform}

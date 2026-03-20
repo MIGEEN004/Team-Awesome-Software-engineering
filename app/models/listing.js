@@ -1,4 +1,4 @@
-const db = require('./../services/db');
+const db = require('../services/db');
 
 class Game {
     id;
