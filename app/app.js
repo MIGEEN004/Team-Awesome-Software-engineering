@@ -4,7 +4,7 @@ const express = require("express");
 // Create express app
 var app = express();
 
-// Add static files location
+// Add static files location (for CSS/Images)
 app.use(express.static("static"));
 
 // Use the Pug templating engine
@@ -14,46 +14,90 @@ app.set('views', './app/views');
 // Get the functions in the db.js file to use
 const db = require('./services/db');
 
-// Get the gaming models
-// Note: listing.js exports { Game }, so we destructure that correctly here
+// Import models
 const { User } = require("./models/user");
 const { Game } = require("./models/listing");
 
-// Create a route for root - /
+// --- ROUTES ---
+
+// 1. Home Page (index.pug)
 app.get("/", function(req, res) {
     res.render("index");
 });
 
-// Task: Display a formatted list of all games (The Listing Page)
+// 2. All Listings Page (all-listings.pug)
 app.get("/all-listings", async function(req, res) {
     try {
-        // Use the static method from the Game model
         const games = await Game.getAllGames();
-        
-        // Send the game objects to the all-listings template
-        res.render('all-listings', {data: games});
+        // Passing 'games' as 'data' to match all-listings.pug
+        res.render('all-listings', { data: games });
     } catch (err) {
         console.error("Error fetching listings:", err);
-        res.status(500).send("Database Error: Could not retrieve listings.");
+        res.status(500).send("Database Error.");
     }
 });
 
-// Shows the user's name, bio, date joined, and their "Featured Posts" (Tips)
+// 3. Listing Detail Page (listing-detail.pug)
+// Note: all-listings.pug links to /listing-single/:id
+app.get("/listing-single/:id", async function(req, res) {
+    try {
+        const gameId = req.params.id;
+        // Fetching single game data directly from DB
+        const sql = "SELECT GameID as id, game_name as Title, platform, GameCategory as category FROM Listing WHERE GameID = ?";
+        const results = await db.query(sql, [gameId]);
+        
+        if (results.length > 0) {
+            // Placeholder values for Description/Price if not in your current schema
+            const gameData = {
+                ...results[0],
+                Description: "A community-shared game tip.",
+                Price: 0, // Keeping with the "mutual benefit rather than gain" theme
+                User_ID: 1 // Link to a mock user for now
+            };
+            res.render('listing-detail', { game: gameData });
+        } else {
+            res.status(404).send("Game not found.");
+        }
+    } catch (err) {
+        console.error("Error fetching game detail:", err);
+        res.status(500).send("Database Error.");
+    }
+});
+
+// 4. Category Results Page (category-results.pug)
+app.get("/category/:id", async function(req, res) {
+    try {
+        const catId = req.params.id;
+        const sql = "SELECT * FROM Listing WHERE GameCategory = ?";
+        const listings = await db.query(sql, [catId]);
+        
+        // Fetching category name for the heading
+        const catSql = "SELECT category_name FROM Category WHERE CategoryID = ?";
+        const catResult = await db.query(catSql, [catId]);
+        const categoryName = catResult.length > 0 ? catResult[0].category_name : "Category";
+
+        res.render('category-results', { 
+            categoryName: categoryName, 
+            listings: listings 
+        });
+    } catch (err) {
+        console.error("Error fetching category results:", err);
+        res.status(500).send("Database Error.");
+    }
+});
+
+// 5. User Profile Page (user-profile.pug)
 app.get("/user-profile/:id", async function (req, res) {
     try {
-        var uId = req.params.id;
+        const uId = req.params.id;
+        const user = new User(uId);
+        await user.getUserDetails(); 
+        await user.getUserTips();    
         
-        // Create a user instance with the ID passed
-        var user = new User(uId);
-        
-        // Populate the user object with database information
-        await user.getUserDetails(); // Gets username, bio, date_joined
-        await user.getUserTips();    // Gets the community tips for this user
-        
-        res.render('user-profile', {user: user});
+        res.render('user-profile', { user: user });
     } catch (err) {
         console.error("Error fetching user profile:", err);
-        res.status(500).send("Database Error: User profile not found.");
+        res.status(500).send("Database Error.");
     }
 });
 
