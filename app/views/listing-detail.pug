@@ -1,0 +1,25 @@
+extends Layout
+
+block content
+  .container
+    h1= game.Title
+    hr
+    .row
+      .col-md-6
+        //- Placeholder for game image
+        img(src="/images/logo.png" alt=game.Title style="width:100%; max-width:400px;")
+      .col-md-6
+        h3 Description
+        p= game.Description
+        h4 Price: £#{game.Price}
+        
+        hr
+        h5 Community Exchange Info
+        p Seller: 
+          a(href=`/user-profile/${game.User_ID}`) View Seller Profile
+        
+        button.btn.btn-primary Contact Seller for Exchange
+    
+    hr
+    h3 Community Feedback
+    p.text-muted No comments yet. Be the first to start a conversation about this item!

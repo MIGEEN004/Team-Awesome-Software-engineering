@@ -1,0 +1,23 @@
+extends Layout
+
+block content
+  .container
+    h1 Category: #{categoryName}
+    p.lead Browse community listings in this section.
+    hr
+    
+    if listings && listings.length > 0
+      .row
+        each game in listings
+          .col-md-4.mb-4
+            .card
+              .card-body
+                h3.card-title= game.Title
+                p.card-text= game.Description
+                p.font-weight-bold Price: £#{game.Price}
+                a.btn.btn-outline-info(href=`/listing-single/${game.Listing_ID}`) Full Details
+    else
+      .alert.alert-info
+        p No listings found in this category. Why not 
+          a(href="/add-listing") share something
+          |  with the community?
