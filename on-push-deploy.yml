@@ -1,0 +1,40 @@
+# This workflow triggers automatically whenever code is pushed to the 'deploy' branch
+name: Automated Deployment and Test
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Create .env file from Secrets
+        # This takes your ENV_FILE secret and turns it into a real file for Docker
+        run: echo "${{ secrets.ENV_FILE }}" > .env
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start Containers with Docker Compose
+        # This is where your error occurred. Ensure the filename matches exactly!
+        uses: hoverkraft-tech/compose-action@v2.0.1
+        with:
+          compose-file: "./docker-compose-deploy.yml"
+
+      - name: Install XVFB for headless testing
+        run: sudo apt-get install xvfb
+
+      - name: Run Nightwatch Tests
+        # Runs the 'test' script from your package.json
+        run: xvfb-run --auto-servernum npm test -- --env chrome
