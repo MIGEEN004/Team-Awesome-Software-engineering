@@ -1,1 +1,13 @@
+name: Manual Workflow
 
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  greet-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say Hello
+        run: echo "The workflow is running successfully!"
