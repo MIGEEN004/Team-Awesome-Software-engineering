@@ -65,10 +65,14 @@ block content
         tr
           th Game Name
           th Platform
+          th Options
       tbody
         for item in data
           tr
             td 
-
-              a(href='/listing-single/' + item.GameID, style="color: #3b5998; font-weight: bold; text-decoration: none;") #{item.game_name}
+              //- Changed item.GameID to item.id AND item.gameName to item.Title
+              a(href='/listing-single/' + item.id, style="color: #3b5998; font-weight: bold; text-decoration: none;") #{item.Title}
             td #{item.platform}
+            td
+              //- Added Chat button
+              a(href='/chat/1?gameId=' + item.id, style="background: #3b5998; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 14px;") Chat

@@ -1,22 +1,32 @@
+// Get the functions in the db.js file to use
 const db = require('../services/db');
 
-class Game {
-    constructor(id, title, platform) {
-        this.id = id;
-        this.title = title;
-        this.platform = platform;
+class Listing {
+    gameID;
+    gameName;
+
+    constructor(id, name) {
+        this.gameID = id;
+        this.gameName = name;
     }
 
+    // --- NEW METHOD: This is what app.js is looking for ---
     static async getAllGames() {
-        const sql = "SELECT GameID, game_name, platform FROM Listing";
+        // We use 'as id' and 'as Title' to match what your Pug files expect
+        const sql = "SELECT GameID as id, game_name as Title, platform, GameCategory as category FROM Listing";
         const results = await db.query(sql);
-        return results.map(row => new Game(row.GameID, row.game_name, row.platform));
+        return results; 
     }
 
-    static async getGameById(id) {
-        const sql = "SELECT * FROM Listing WHERE GameID = ?";
-        const results = await db.query(sql, [id]);
-        return results.length ? new Game(results[0].GameID, results[0].game_name, results[0].platform) : null;
+    async getGameDetails() {
+        if (typeof this.gameName !== 'string') {
+            var sql = "SELECT * from Listing where GameID = ?"
+            const results = await db.query(sql, [this.gameID]);
+            this.gameName = results[0].game_name;
+        }
     }
 }
-module.exports = { Game };
+
+module.exports = {
+    Game: Listing // Exporting it as 'Game' so app.js can use 'const { Game } = require...'
+}

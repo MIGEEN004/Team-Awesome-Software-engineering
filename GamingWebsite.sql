@@ -59,3 +59,25 @@ INSERT INTO `Listing` (`game_name`, `platform`, `GameCategory`) VALUES
 INSERT INTO `Tip` (`tip_title`, `tip_content`, `UserID`, `GameID`, `CategoryID`, `Votes`) VALUES 
 ('How to beat Margit', 'Focus on parrying his slower staff swings...', 1, 1, 1, 150),
 ('Best Early Game Farm', 'Head to Limgrave near the warmaster hut...', 2, 1, 4, 45);
+
+CREATE TABLE Messages ( 
+
+    MessageID INT AUTO_INCREMENT PRIMARY KEY, 
+
+    sender_id INT NOT NULL, 
+
+    receiver_id INT NOT NULL, 
+
+    game_id INT DEFAULT NULL, 
+
+    message_text TEXT NOT NULL, 
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+
+    FOREIGN KEY (sender_id) REFERENCES Users(UserID), 
+
+    FOREIGN KEY (receiver_id) REFERENCES Users(UserID), 
+
+    FOREIGN KEY (game_id) REFERENCES Listing(GameID) 
+
+);

@@ -11,15 +11,17 @@ block content
       .col-md-6
         h3 Description
         p= game.Description
-        h4 Price: £#{game.Price}
+        h4 Category: #{game.category}
         
         hr
-        h5 Community Exchange Info
-        p Seller: 
-          a(href=`/user-profile/${game.User_ID}`) View Seller Profile
+        h5 Tip Contributor
+        p Author: 
+          a(href=`/user-profile/${game.User_ID}`) View Author Profile
         
-        button.btn.btn-primary Contact Seller for Exchange
+        //- This link now connects to your app.get("/chat/:receiverId") route
+        a(href=`/chat/${game.User_ID}?gameId=${game.id}`)
+          button.btn.btn-primary Ask Author for more Tips
     
     hr
-    h3 Community Feedback
-    p.text-muted No comments yet. Be the first to start a conversation about this item!
+    h3 Community Discussion
+    p.text-muted No comments yet. Be the first to start a conversation about this tip!
