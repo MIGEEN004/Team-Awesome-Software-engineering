@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "supervisor index.js",
-    "test": "nightwatch --env chrome ./custom-tests"
+    "test": "npx nightwatch --env chrome ./custom-tests"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +14,7 @@
     "express": "^4.22.1",
     "mysql": "^2.18.1",
     "mysql2": "^3.17.2",
+    "nightwatch": "^3.0.0",
     "pug": "^3.0.3",
     "sqlite3": "^5.0.2",
     "supervisor": "^0.12.0"
