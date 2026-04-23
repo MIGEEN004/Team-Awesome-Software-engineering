@@ -1,42 +1,32 @@
-name: Manual workflow for docker
-
-on:
-  workflow_dispatch:
+name: Gaming Site CI
+on: 
+  workflow_dispatch: # Allows manual start
+  push:
+    branches: [ main, deploy ] # Runs automatically on push
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check initial state
-        run: echo "Starting the build process..."
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Note: Node 24 is very new; 20 is the current LTS
+          node-version: '24'
 
-      - name: Check Environment
-        run: |
-          node --version
-          ls -R
-
-      - name: Create the .env file
+      - name: Create .env file
         run: echo "${{ secrets.ENV_FILE }}" > .env
 
       - name: Install dependencies
         run: npm install
 
-      - name: Docker Compose Up
+      - name: Start Containers
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           compose-file: "./docker-compose.yml"
 
-      - name: Install test dependencies
-        run: sudo apt-get install xvfb
-
-      - name: Run Nightwatch tests
-        run: xvfb-run --auto-servernum npm test -- --env chrome
+      - name: Run Tests
+        run: |
+          sudo apt-get install xvfb
+          xvfb-run --auto-servernum npm test -- --env chrome
