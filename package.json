@@ -4,8 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+<<<<<<< HEAD
     "start": "supervisor index.js",
     "test": "npx nightwatch --env chrome ./custom-tests"
+=======
+    "start": "supervisor -i node_modules -e 'js,pug' app/app.js",
+    "test": "nightwatch --env chrome ./custom-tests"
+>>>>>>> b8bd457f000a57d5a803e72011fb95f984f98795
   },
   "author": "",
   "license": "ISC",
