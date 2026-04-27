@@ -9,24 +9,27 @@ block content
       border-bottom: 3px solid #edc967;
     }
     .search-input {
-      width: 70%;
+      width: 60%;
       padding: 8px;
       border-radius: 4px;
-      border: none;
+      border: 1px solid #ccc;
     }
     .btn-search {
       padding: 8px 20px;
-      background-color: #768dcd;
-      color: white;
+      background-color: #edc967;
+      color: #333;
       border: none;
+      font-weight: bold;
+      border-radius: 4px;
       margin-left: 10px;
       cursor: pointer;
     }
-    .filter-btn {
-      background: #e2e2e2;
+    .filter-select {
+      padding: 7px;
+      border-radius: 4px;
       border: 1px solid #ccc;
-      margin: 5px;
-      padding: 5px 15px;
+      margin-right: 10px;
+      background: white;
     }
     table {
       width: 100%;
@@ -50,13 +53,27 @@ block content
     }
 
   .search-section
-    input.search-input(type="text" placeholder="Search Game Titles...")
-    button.btn-search Search
-    .advance-search(style="margin-top: 15px;")
-      span(style="font-weight: bold;") Advance Search: 
-      button.filter-btn Game 
-      button.filter-btn Platform 
-      button.filter-btn Type
+    form(method="GET" action="/all-listings")
+      input.search-input(type="text" name="search" placeholder="Search Game Titles..." value=(query ? query.search : ''))
+      button.btn-search(type="submit") Apply Filters
+
+      .advance-search(style="margin-top: 15px; display: flex; align-items: center;")
+        span(style="font-weight: bold; margin-right: 15px;") Filter By: 
+        
+        select.filter-select(name="category")
+          option(value="") All Types
+          if categories
+            each cat in categories
+              option(value=cat.CategoryID selected=(query && cat.CategoryID == query.category)) #{cat.category_name}
+        
+        select.filter-select(name="platform")
+          option(value="") All Platforms
+          option(value="PC" selected=(query && query.platform == 'PC')) PC
+          option(value="PlayStation" selected=(query && query.platform == 'PlayStation')) PlayStation
+          option(value="Xbox" selected=(query && query.platform == 'Xbox')) Xbox
+          option(value="Switch" selected=(query && query.platform == 'Switch')) Nintendo Switch
+
+        a(href="/all-listings" style="color: #edc967; font-size: 0.9em; text-decoration: none; margin-left: 10px;") Reset
 
   .container(style="padding: 20px;")
     h2(style="color: #333;") Search Results
@@ -67,12 +84,15 @@ block content
           th Platform
           th Options
       tbody
-        for item in data
+        if data && data.length > 0
+          for item in data
+            tr
+              td 
+                a(href='/listing-single/' + item.id, style="color: #3b5998; font-weight: bold; text-decoration: none;") #{item.Title}
+              td #{item.platform}
+              td
+                //- CRITICAL FIX: Ensure this is NOT /chat/1. It must use item.id
+                a(href='/chat/' + item.id, style="background: #3b5998; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 14px;") Chat
+        else
           tr
-            td 
-              //- Changed item.GameID to item.id AND item.gameName to item.Title
-              a(href='/listing-single/' + item.id, style="color: #3b5998; font-weight: bold; text-decoration: none;") #{item.Title}
-            td #{item.platform}
-            td
-              //- Added Chat button
-              a(href='/chat/1?gameId=' + item.id, style="background: #3b5998; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 14px;") Chat
+            td(colspan="3" style="text-align: center; padding: 20px; color: #888;") No games match your search criteria.

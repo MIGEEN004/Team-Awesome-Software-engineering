@@ -2,25 +2,18 @@
   "name": "sd2-example",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app/app.js",
   "scripts": {
-<<<<<<< HEAD
-    "start": "supervisor index.js",
-    "test": "npx nightwatch --env chrome ./custom-tests"
-=======
-    "start": "supervisor -i node_modules -e 'js,pug' app/app.js",
-    "test": "nightwatch --env chrome ./custom-tests"
->>>>>>> b8bd457f000a57d5a803e72011fb95f984f98795
+    "start": "supervisor app/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "chromedriver": "*",
     "dotenv": "^10.0.0",
     "express": "^4.22.1",
     "mysql": "^2.18.1",
     "mysql2": "^3.17.2",
-    "nightwatch": "^3.0.0",
     "pug": "^3.0.3",
     "sqlite3": "^5.0.2",
     "supervisor": "^0.12.0"

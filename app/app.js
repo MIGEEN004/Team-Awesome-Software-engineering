@@ -93,48 +93,63 @@ app.get("/user-profile/:id", async function (req, res) {
     }
 });
 
-// --- MESSAGING ROUTES ---
+// --- MESSAGING & FORUM ROUTES ---
 
-// Route to view chat
-app.get("/chat/:receiverId", async function(req, res) {
+// Route to view the forum/chat (Public) with Search functionality
+app.get("/chat/:gameId", async function(req, res) {
     try {
-        const senderId = 111; // SarahDDoS from your DB screenshot
-        const receiverId = req.params.receiverId;
-        const gameId = req.query.gameId || null;
+        const senderId = 1; // Updated to 1 to match existing UserID in DB
+        const gameId = req.params.gameId; 
+        const searchQuery = req.query.search || ""; 
 
-        // Fetches chat history between sender and receiver
-        const history = await Message.getChatHistory(senderId, receiverId);
+        let history;
+        if (searchQuery) {
+            const sql = "SELECT * FROM Messages WHERE game_id = ? AND message_text LIKE ? ORDER BY created_at ASC";
+            history = await db.query(sql, [gameId, `%${searchQuery}%`]);
+        } else {
+            history = await Message.getChatHistory(gameId);
+        }
 
         res.render('chat', {
             messages: history,
-            receiverId: receiverId,
             currentUserId: senderId,
-            gameId: gameId
+            gameId: gameId,
+            searchQuery: searchQuery 
         });
     } catch (err) {
-        // Log the actual error to the terminal so you can fix it
         console.error("DATABASE OR RENDER ERROR:", err.message);
-        res.status(500).send("Chat Error: " + err.message);
+        res.status(500).send("Chat Error");
     }
 });
 
-// Route to process sending a message
+// Route to process sending a message (CRUD: Create)
 app.post("/send-message", async function(req, res) {
     try {
-        const senderId = 111; 
-        const { receiverId, message_text, gameId } = req.body;
+        const senderId = 1; // Updated to 1 to match existing UserID in DB
+        const { message_text, gameId } = req.body;
 
-        // Create message object
-        const newMessage = new Message(null, senderId, receiverId, message_text, gameId);
+        const newMessage = new Message(null, senderId, message_text, gameId);
         
-        // Save to database
         await newMessage.saveToDatabase();
 
-        // Redirect back to chat page to see the new message
-        res.redirect(`/chat/${receiverId}?gameId=${gameId}`);
+        res.redirect(`/chat/${gameId}`);
     } catch (err) {
         console.error("Send message error:", err);
         res.status(500).send("Failed to send message");
+    }
+});
+
+// Route to delete a message (CRUD: Delete)
+app.post("/delete-message/:messageId", async function(req, res) {
+    try {
+        const messageId = req.params.messageId;
+        const gameId = req.body.gameId;
+        const sql = "DELETE FROM Messages WHERE MessageID = ?";
+        await db.query(sql, [messageId]);
+        res.redirect(`/chat/${gameId}`);
+    } catch (err) {
+        console.error("Delete error:", err);
+        res.status(500).send("Failed to delete message");
     }
 });
 
