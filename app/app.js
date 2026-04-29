@@ -20,16 +20,15 @@ const { Game } = require("./models/listing");
 
 // --- ROUTES ---
 
-// 1. Home Page (index.pug)
+// 1. Home Page
 app.get("/", function(req, res) {
     res.render("index");
 });
 
-// 2. All Listings Page (all-listings.pug)
+// 2. All Listings Page
 app.get("/all-listings", async function(req, res) {
     try {
         const games = await Game.getAllGames();
-        // Passing 'games' as 'data' to match all-listings.pug
         res.render('all-listings', { data: games });
     } catch (err) {
         console.error("Error fetching listings:", err);
@@ -37,11 +36,10 @@ app.get("/all-listings", async function(req, res) {
     }
 });
 
-// 3. Listing Detail Page (listing-detail.pug)
+// 3. Listing Detail Page
 app.get("/listing-single/:id", async function(req, res) {
     try {
         const gameId = req.params.id;
-        // Fetching single game data directly from DB
         const sql = "SELECT GameID as id, game_name as Title, platform, GameCategory as category FROM Listing WHERE GameID = ?";
         const results = await db.query(sql, [gameId]);
         
@@ -49,7 +47,7 @@ app.get("/listing-single/:id", async function(req, res) {
             const gameData = {
                 ...results[0],
                 Description: "A community-shared game tip.",
-                Price: 0, // Mutual benefit theme
+                Price: 0, 
                 User_ID: 1 
             };
             res.render('listing-detail', { game: gameData });
@@ -62,7 +60,7 @@ app.get("/listing-single/:id", async function(req, res) {
     }
 });
 
-// 4. Category Results Page (category-results.pug)
+// 4. Category Results Page
 app.get("/category/:id", async function(req, res) {
     try {
         const catId = req.params.id;
@@ -83,7 +81,7 @@ app.get("/category/:id", async function(req, res) {
     }
 });
 
-// 5. User Profile Page (user-profile.pug)
+// 5. User Profile Page
 app.get("/user-profile/:id", async function (req, res) {
     try {
         const uId = req.params.id;
@@ -98,5 +96,6 @@ app.get("/user-profile/:id", async function (req, res) {
     }
 });
 
-// Export the app object so it can be used by index.js and testing frameworks
+// CRITICAL: Export the app for index.js and tests to use.
+// DO NOT ADD app.listen() HERE!
 module.exports = app;

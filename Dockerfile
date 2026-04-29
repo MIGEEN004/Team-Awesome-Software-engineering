@@ -17,4 +17,5 @@ COPY . /src
 # Expose our application port (3000)
 EXPOSE 3000
 
-
+# Start the application using npm start (which points to index.js)
+CMD ["npm", "start"]
