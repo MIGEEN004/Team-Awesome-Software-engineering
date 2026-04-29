@@ -38,7 +38,6 @@ app.get("/all-listings", async function(req, res) {
 });
 
 // 3. Listing Detail Page (listing-detail.pug)
-// Note: all-listings.pug links to /listing-single/:id
 app.get("/listing-single/:id", async function(req, res) {
     try {
         const gameId = req.params.id;
@@ -47,12 +46,11 @@ app.get("/listing-single/:id", async function(req, res) {
         const results = await db.query(sql, [gameId]);
         
         if (results.length > 0) {
-            // Placeholder values for Description/Price if not in your current schema
             const gameData = {
                 ...results[0],
                 Description: "A community-shared game tip.",
-                Price: 0, // Keeping with the "mutual benefit rather than gain" theme
-                User_ID: 1 // Link to a mock user for now
+                Price: 0, // Mutual benefit theme
+                User_ID: 1 
             };
             res.render('listing-detail', { game: gameData });
         } else {
@@ -71,7 +69,6 @@ app.get("/category/:id", async function(req, res) {
         const sql = "SELECT * FROM Listing WHERE GameCategory = ?";
         const listings = await db.query(sql, [catId]);
         
-        // Fetching category name for the heading
         const catSql = "SELECT category_name FROM Category WHERE CategoryID = ?";
         const catResult = await db.query(catSql, [catId]);
         const categoryName = catResult.length > 0 ? catResult[0].category_name : "Category";
@@ -101,7 +98,5 @@ app.get("/user-profile/:id", async function (req, res) {
     }
 });
 
-// Start server on port 3000
-app.listen(3000, function(){
-    console.log(`Server running at http://127.0.0.1:3000/`);
-});
+// Export the app object so it can be used by index.js and testing frameworks
+module.exports = app;

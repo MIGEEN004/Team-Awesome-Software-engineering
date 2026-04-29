@@ -16,7 +16,7 @@ jobs:
       with:
         node-version: '20'
     - run: npm install
-    # - run: npm test  # Uncomment this if you have written tests!
+    run: npm test  # Uncomment this if you have written tests!
 docker-build:
     needs: build-and-test
     runs-on: ubuntu-latest
