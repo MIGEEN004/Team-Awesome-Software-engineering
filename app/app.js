@@ -4,6 +4,26 @@ const express = require("express");
 // Create express app
 var app = express();
 
+// Import session and bcrypt
+const session = require('express-session');
+const bcrypt = require('bcrypt');
+
+// ... (existing code like var app = express();)
+
+// 1. Setup Body Parser to handle form submissions (POST requests)
+app.use(express.urlencoded({ extended: true }));
+
+// 2. Setup Session Middleware
+app.use(session({
+  secret: 'team-awesome-secret-key', // In production, use an environment variable!
+  resave: false,
+  saveUninitialized: false,
+  cookie: { 
+    secure: false, // Set to true if using HTTPS
+    maxAge: 1000 * 60 * 60 * 24 // Session expires in 24 hours
+  }
+}));
+
 // Add static files location (for CSS/Images)
 app.use(express.static("static"));
 
@@ -18,11 +38,73 @@ const db = require('./services/db');
 const { User } = require("./models/user");
 const { Game } = require("./models/listing");
 
+
+// POST Login - Process the credentials
+app.post("/login", async function(req, res) {
+    const { username, password } = req.body;
+
+    try {
+        // 1. Find the user in the database
+        const sql = "SELECT * FROM Users WHERE username = ?";
+        const results = await db.query(sql, [username]);
+
+        if (results.length > 0) {
+            const user = results[0];
+
+            // 2. Compare the provided password with the hashed password in the DB
+            // Note: For now, if your DB sample data has plain text 'hashed_pass_123', 
+            // bcrypt.compare will fail until you register a user with a real hash.
+            const match = await bcrypt.compare(password, user.password);
+
+            if (match) {
+                // 3. Authentication successful! Store user info in the session
+                req.session.user_id = user.UserID;
+                req.session.username = user.username;
+                req.session.loggedIn = true;
+
+                console.log(`User ${user.username} logged in successfully.`);
+                res.redirect("/"); // Redirect to home page
+            } else {
+                // Password does not match
+                res.render("login", { error: "Invalid username or password." });
+            }
+        } else {
+            // User not found
+            res.render("login", { error: "Invalid username or password." });
+        }
+    } catch (err) {
+        console.error("Login error:", err);
+        res.status(500).send("A server error occurred.");
+    }
+});
+
+// Middleware to make user data available to all PUG templates
+app.use((req, res, next) => {
+    // res.locals allows variables to be accessed in any .pug file
+    res.locals.loggedIn = req.session.loggedIn || false;
+    res.locals.username = req.session.username || null;
+    res.locals.userId = req.session.user_id || null;
+    next();
+});
+
+
 // --- ROUTES ---
 
 // 1. Home Page
-app.get("/", function(req, res) {
-    res.render("index");
+// 1. Home Page - Now fetches categories for the community tags
+app.get("/", async function(req, res) {
+    try {
+        // Query the Category table based on your SQL schema
+        const sql = "SELECT CategoryID as id, category_name as name FROM Category";
+        const categories = await db.query(sql);
+        
+        // Pass the categories to the 'index' view
+        res.render("index", { categories: categories });
+    } catch (err) {
+        console.error("Error fetching categories for home page:", err);
+        // Fallback to an empty array so the page doesn't crash
+        res.render("index", { categories: [] }); 
+    }
 });
 
 // 2. All Listings Page
@@ -81,6 +163,15 @@ app.get("/category/:id", async function(req, res) {
     }
 });
 
+app.get("/", async function(req, res) {
+    try {
+        const categories = await Category.getAllCategories();
+        res.render("index", { categories: categories });
+    } catch (err) {
+        res.status(500).send("Error loading categories.");
+    }
+});
+
 // 5. User Profile Page
 app.get("/user-profile/:id", async function (req, res) {
     try {
@@ -95,6 +186,49 @@ app.get("/user-profile/:id", async function (req, res) {
         res.status(500).send("Database Error.");
     }
 });
+
+// GET Login Page
+app.get("/login", function(req, res) {
+    res.render("login");
+});
+
+// GET Logout
+app.get("/logout", function(req, res) {
+    req.session.destroy((err) => {
+        if (err) {
+            return console.log(err);
+        }
+        res.redirect("/");
+    });
+});
+
+// GET Register Page
+app.get("/register", function(req, res) {
+    res.render("register");
+});
+
+// POST Register - Create a new user
+app.post("/register", async function(req, res) {
+    const { username, email, password } = req.body;
+
+    try {
+        // 1. Hash the password before saving (Security Requirement)
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        // 2. Insert into the Users table
+        const sql = "INSERT INTO Users (username, email, password) VALUES (?, ?, ?)";
+        await db.query(sql, [username, email, hashedPassword]);
+
+        // 3. Success: Redirect to login so they can sign in
+        res.redirect("/login");
+    } catch (err) {
+        console.error("Registration error:", err);
+        // Handle duplicate username/email errors specifically if needed
+        res.render("register", { error: "Username or email already exists." });
+    }
+});
+
 
 // CRITICAL: Export the app for index.js and tests to use.
 // DO NOT ADD app.listen() HERE!

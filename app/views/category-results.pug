@@ -1,23 +1,21 @@
+//- app/views/category-results.pug
 extends Layout
 
 block content
   .container
-    h1 Category: #{categoryName}
-    p.lead Browse community listings in this section.
+    h1 Community Channel: #{categoryName}
     hr
-    
     if listings && listings.length > 0
       .row
         each game in listings
           .col-md-4.mb-4
             .card
               .card-body
-                h3.card-title= game.Title
-                p.card-text= game.Description
-                p.font-weight-bold Price: £#{game.Price}
-                a.btn.btn-outline-info(href=`/listing-single/${game.Listing_ID}`) Full Details
+                //- Use game_name to match your SQL schema
+                h3.card-title= game.game_name 
+                p.card-text Platform: #{game.platform}
+                a.btn.btn-outline-info(href=`/listing-single/${game.GameID}`) View Tips
     else
       .alert.alert-info
-        p No listings found in this category. Why not 
-          a(href="/add-listing") share something
-          |  with the community?
+        p No community contributions yet. 
+        a(href="/") Be the first to share a tip!

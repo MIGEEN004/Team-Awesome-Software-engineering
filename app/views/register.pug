@@ -1,0 +1,24 @@
+extends Layout
+
+block content
+    .container
+        h1 Join the Community
+        p Create an account to start sharing and exchanging game tips.
+        
+        if error
+            .alert.alert-danger= error
+
+        form(action='/register', method='POST')
+            .form-group
+                label(for='username') Username
+                input#username.form-control(type='text', name='username', required=true)
+            
+            .form-group
+                label(for='email') Email Address
+                input#email.form-control(type='email', name='email', required=true)
+            
+            .form-group
+                label(for='password') Password
+                input#password.form-control(type='password', name='password', required=true)
+            
+            button.btn.btn-success(type='submit') Register

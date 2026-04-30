@@ -1,0 +1,29 @@
+extends Layout
+
+block content
+    .container
+        h1 Login to Gamespace
+        p Join our community to share, exchange, and build together!
+        
+        //- Display error message if authentication fails
+        if error
+            div(style="color: red; margin-bottom: 20px;")
+                strong Error: 
+                | #{error}
+
+        //- The form action matches the POST route in app.js
+        form(action='/login', method='POST')
+            div.form-group(style="margin-bottom: 15px;")
+                label(for='username' style="display: block;") Username:
+                input#username(type='text', name='username', required=true, style="width: 100%; padding: 8px;")
+            
+            div.form-group(style="margin-bottom: 15px;")
+                label(for='password' style="display: block;") Password:
+                input#password(type='password', name='password', required=true, style="width: 100%; padding: 8px;")
+            
+            div.form-actions
+                button(type='submit', style="padding: 10px 20px; cursor: pointer;") Login
+        
+        hr(style="margin-top: 30px;")
+        p New to the community? 
+            a(href='/register') Create an account here.
