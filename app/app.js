@@ -4,6 +4,8 @@ const express = require("express");
 // Create express app
 var app = express();
 
+app.use(express.urlencoded({ extended: true })); 
+
 // Import session and bcrypt
 const session = require('express-session');
 const bcrypt = require('bcrypt');
@@ -227,6 +229,30 @@ app.post("/register", async function(req, res) {
         // Handle duplicate username/email errors specifically if needed
         res.render("register", { error: "Username or email already exists." });
     }
+});
+
+// Rating routes 
+
+app.post("/listing-single/:id/rate-game", async function(req, res) { 
+
+    const gameId = req.params.id; 
+
+    const { graphics, gameplay, difficulty, story } = req.body; 
+
+ 
+
+    await db.query( 
+
+        "INSERT INTO GameRating (GameID, UserID, graphics, gameplay, difficulty, story) VALUES (?, 1, ?, ?, ?, ?)", 
+
+        [gameId, graphics, gameplay, difficulty, story] 
+
+    ); 
+
+ 
+
+    res.redirect(`/listing-single/${gameId}`); 
+
 });
 
 

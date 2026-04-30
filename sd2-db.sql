@@ -59,3 +59,47 @@ INSERT INTO `Listing` (`game_name`, `platform`, `GameCategory`) VALUES
 INSERT INTO `Tip` (`tip_title`, `tip_content`, `UserID`, `GameID`, `CategoryID`, `Votes`) VALUES 
 ('How to beat Margit', 'Focus on parrying his slower staff swings...', 1, 1, 1, 150),
 ('Best Early Game Farm', 'Head to Limgrave near the warmaster hut...', 2, 1, 4, 45);
+
+CREATE TABLE GameRating ( 
+
+  GameRatingID INT AUTO_INCREMENT PRIMARY KEY, 
+
+  GameID INT NOT NULL, 
+
+  UserID INT NOT NULL, 
+
+  graphics INT NOT NULL, 
+
+  gameplay INT NOT NULL, 
+
+  difficulty INT NOT NULL, 
+
+  story INT NOT NULL, 
+
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP, 
+
+  FOREIGN KEY (GameID) REFERENCES Listing(GameID) ON DELETE CASCADE, 
+
+  FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE 
+
+); 
+
+ 
+
+CREATE TABLE TipRating ( 
+
+  TipRatingID INT AUTO_INCREMENT PRIMARY KEY, 
+
+  TipID INT NOT NULL, 
+
+  UserID INT NOT NULL, 
+
+  helpfulness INT NOT NULL, 
+
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP, 
+
+  FOREIGN KEY (TipID) REFERENCES Tip(TipID) ON DELETE CASCADE, 
+
+  FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE 
+
+); 

@@ -20,6 +20,101 @@ block content
         
         button.btn.btn-primary Contact Seller for Exchange
     
+    hr 
+
+h3 Rate This Game 
+
+ 
+
+form(method="POST", action=`/listing-single/${game.id}/rate-game`) 
+
+  label Graphics (1–5) 
+
+  input(type="number", name="graphics", min="1", max="5", required) 
+
+ 
+
+  br 
+
+ 
+
+  label Gameplay (1–5) 
+
+  input(type="number", name="gameplay", min="1", max="5", required) 
+
+ 
+
+  br 
+
+ 
+
+  label Difficulty (1–5) 
+
+  input(type="number", name="difficulty", min="1", max="5", required) 
+
+ 
+
+  br 
+
+ 
+
+  label Story (1–5) 
+
+  input(type="number", name="story", min="1", max="5", required) 
+
+ 
+
+  br 
+
+ 
+
+  button(type="submit") Submit Game Rating 
+ 
+
+hr 
+
+h3 Rate User Tips 
+
+ 
+
+if game.tips 
+
+  each tip in game.tips 
+
+    div(style="border:1px solid #ccc; padding:10px; margin:10px 0;") 
+
+      p #{tip.tip_content} 
+
+ 
+
+      p Helpfulness: #{tip.helpfulness || "Not rated yet"} 
+
+ 
+
+      form(method="POST", action=`/tip/${tip.TipID}/rate`) 
+
+        input(type="hidden", name="gameId", value=game.id) 
+
+ 
+
+        label Rate helpfulness (1–5) 
+
+        select(name="helpfulness") 
+
+          option(value="1") 1 - Not helpful 
+
+          option(value="2") 2 
+
+          option(value="3") 3 
+
+          option(value="4") 4 
+
+          option(value="5") 5 - Very helpful 
+
+ 
+
+        button(type="submit") Submit
     hr
     h3 Community Feedback
     p.text-muted No comments yet. Be the first to start a conversation about this item!
+
