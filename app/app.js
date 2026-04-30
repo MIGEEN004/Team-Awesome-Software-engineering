@@ -255,6 +255,25 @@ app.post("/listing-single/:id/rate-game", async function(req, res) {
 
 });
 
+// Example logic structure for app/app.js
+app.post('/send-message', async (req, res) => {
+    const { receiverId, listingId, messageText } = req.body;
+    const senderId = req.session.userId; // Ensure middleware handles session check
+
+    if (!senderId) {
+        return res.redirect('/login'); // Requirement: User login
+    }
+
+    try {
+        const sql = "INSERT INTO messages (sender_id, receiver_id, listing_id, message_text) VALUES (?, ?, ?, ?)";
+        await db.query(sql, [senderId, receiverId, listingId, messageText]);
+        res.redirect(`/listing/${listingId}?success=true`);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error sending message");
+    }
+});
+
 
 // CRITICAL: Export the app for index.js and tests to use.
 // DO NOT ADD app.listen() HERE!

@@ -20,3 +20,12 @@ block content
             p #{tip.tip_content}
       else
         p No posts available for this user.
+    // Example loop in user-profile.pug
+if messages.length > 0
+  each msg in messages
+    div.message-box
+      p From: #{msg.sender_name}
+      p= msg.message_text
+      small Sent at: #{msg.sent_at}
+else
+  p No messages yet. Start sharing with your community!
