@@ -69,6 +69,6 @@ block content
         for item in data
           tr
             td 
-
-              a(href='/listing-single/' + item.GameID, style="color: #3b5998; font-weight: bold; text-decoration: none;") #{item.game_name}
+              //- Change item.GameID to item.id and item.game_name to item.title
+              a(href='/listing-single/' + item.id, style="color: #3b5998; font-weight: bold; text-decoration: none;") #{item.title}
             td #{item.platform}
