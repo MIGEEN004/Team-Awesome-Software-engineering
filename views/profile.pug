@@ -1,0 +1,49 @@
+extends layout
+
+block content
+  .profile-container
+    //- Top Section: Profile Header
+    .profile-header
+      .profile-pic
+        .circle-avatar
+          span= user.full_name.charAt(0)
+      
+      .profile-bio
+        if user.bio
+          p= user.bio
+        else
+          p No bio provided.
+        
+        //- Messaging Button (Only show if logged in AND it's not their own profile)
+        if currentUser && currentUser.id != user.id
+          a.btn-message(href=`/messages/${user.id}`) Send Message
+          
+      .profile-info
+        p 
+          strong Member Since: 
+          | #{new Date(user.date_joined).toLocaleDateString()}
+        p 
+          strong Email: 
+          | #{user.email}
+
+    //- Bottom Section: User Posts
+    .profile-posts-section
+      .posts-header
+        h3 User Posts
+
+      .posts-list
+        if posts && posts.length > 0
+          each post in posts
+            .post-card
+              .post-left
+                h4
+                  //- Made the title clickable so you can view the post
+                  a(href=`/post/${post.id}`)= post.title
+                p.post-date= new Date(post.post_timestamp).toLocaleDateString()
+              
+              .post-right
+                p.post-flair Post flair: #{post.Flair_Name ? post.Flair_Name : 'None'}
+                p.post-feedback Rating: #{post.total_rating} / 5
+        else
+          .no-posts
+            p This user has not posted anything yet.

@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  h1 Search Results for "#{query}"
+
+  section
+    h2 Games
+    if games.length
+      ul
+        each game in games
+          li: a(href=`/games/${game.id}`) #{game.title}
+    else
+      p No games found.
+
+  section
+    h2 Posts
+    if posts.length
+      ul
+        each post in posts
+          li: a(href=`/posts/${post.id}`) #{post.title}
+    else
+      p No posts found.

@@ -1,0 +1,36 @@
+extends layout
+
+block content
+  .posts-container
+    h1 Community Posts
+    if posts && posts.length > 0
+      each post in posts
+        .post-card
+          //- Column 1: Author Icon (Mimics the game cover space)
+          .card-left
+            .circle-avatar #{post.username.charAt(0).toUpperCase()}
+          
+          //- Column 2: Title & Author info
+          .card-mid
+            h2
+              a(href='/post/' + post.id)= post.title
+            p.post-username Posted by: #{post.username}
+          
+          //- Column 3: Metadata
+          .card-right
+            .metadata
+              p 
+                strong Date: 
+                | #{post.date}
+              p 
+                strong Flair: 
+                | #{post.flair}
+              p 
+                strong Game: 
+                | #{post.game_name}
+              p 
+                strong Platform: 
+                | #{post.platform_name}
+    else
+      .sidebar-box
+        p.placeholder-content No posts found in the archives.

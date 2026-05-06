@@ -1,30 +1,39 @@
-version: '3.3'
 services:
-  web:
-    build:
-      context: ./
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secretpassword
+      MYSQL_DATABASE: team_awesome
     volumes:
-      - .:/src
-      - /src/node_modules  
-    command: supervisor -i node_modules -e 'js,pug' index.js
+      - db_data:/var/lib/mysql
+      - ./sd2-db.sql:/docker-entrypoint-initdb.d/sd2-db.sql
+    # This tells Docker how to check if MySQL is actually ready
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
     ports:
       - "3000:3000"
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy # This forces web to wait until the healthcheck passes
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
     depends_on:
       - db
-  db:
-    image: mysql
-    restart: always
-    env_file:
-      - ./.env
-    ports:
-      - "3308:3306"
-    volumes:
-      - ./db:/var/lib/mysql
-      - ./sd2-db.sql:/docker-entrypoint-initdb.d/init.sql
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:latest
-    restart: always
-    env_file:
-      - ./.env
-    ports:
-      - "8081:80"
+
+volumes:
+  db_data:

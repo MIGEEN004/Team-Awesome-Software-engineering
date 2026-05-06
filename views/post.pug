@@ -1,0 +1,83 @@
+extends layout
+
+block content
+  .post-page-layout
+    //- Nickname tag
+    .author-nickname= post.nickname
+
+    .post-header-row
+      .title-box
+        h1= post.title
+
+      .meta-stack
+        p 🏷️ #{post.Flair_Name || 'General'}
+        p 🎮 #{post.game_name}
+        p 💻 #{post.platform_name}
+        //- Removes everything after 'GMT'
+        p 📅 #{post.post_timestamp.toString().split(' GMT')[0]}
+
+    .description-box
+      h4 Post description:
+      p.description-text= post.description
+
+    .rating-row
+      .rating-box
+        strong Total Rating: 
+        span= post.total_rating
+      
+      //- NEW: Rating Form
+      if currentUser
+        .rating-form-box(style="margin-top: 10px;")
+          form(action=`/post/${post.id}/rate` method="POST")
+            label(for="rating") Rate this post: 
+            select(name="rating_value" id="rating" required)
+              option(value="" disabled selected) Select...
+              option(value="5") 5 - Excellent
+              option(value="4") 4 - Good
+              option(value="3") 3 - Average
+              option(value="2") 2 - Poor
+              option(value="1") 1 - Terrible
+            button(type="submit" style="margin-left: 10px;") Submit Rating
+
+    .comments-container
+      h3 Community Discussion
+      hr
+      
+      //- NEW: Comment Form
+      if currentUser
+        .add-comment-box(style="margin-bottom: 20px;")
+          h4 Leave a Comment (as #{currentUser.nickname})
+          form(action=`/post/${post.id}/comment` method="POST")
+            textarea(name="comment_text" rows="3" placeholder="Write your thoughts here..." required style="width: 100%; margin-bottom: 10px;")
+            button(type="submit") Post Comment
+            
+      hr
+
+      if comments && comments.length > 0
+        each comment in comments
+          .comment-block(style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;")
+            .comment-content
+              strong= comment.nickname
+              //- Applied cleanup to comment timestamps as well[cite: 4]
+              span.timestamp  — #{comment.comment_timestamp.toString().split(' GMT')[0]}
+              p= comment.comment_text
+            
+            if replies && replies.some(r => r.comment_id == comment.id)
+              .replies-list(style="margin-left: 20px; border-left: 2px solid #eee; padding-left: 10px;")
+                each reply in replies
+                  if reply.comment_id == comment.id
+                    .reply-item
+                      strong= reply.nickname
+                      span.timestamp  — #{reply.reply_timestamp.toString().split(' GMT')[0]}
+                      p= reply.reply_text
+                      
+            //- NEW: Reply Form
+            if currentUser
+              .add-reply-box(style="margin-left: 20px; margin-top: 10px;")
+                form(action=`/comment/${comment.id}/reply` method="POST")
+                  //- Hidden input so the backend knows which post to redirect back to
+                  input(type="hidden" name="postId" value=post.id)
+                  textarea(name="reply_text" rows="2" placeholder="Write a reply..." required style="width: 100%; margin-bottom: 5px;")
+                  button(type="submit") Reply
+      else
+        p.no-comments No thoughts yet. Be the first to comment!

@@ -1,280 +1,155 @@
-// Import express.js
-const express = require("express");
-
-// Create express app
-var app = express();
-
-app.use(express.urlencoded({ extended: true })); 
-
-// Import session and bcrypt
-const session = require('express-session');
-const bcrypt = require('bcrypt');
-
-// ... (existing code like var app = express();)
-
-// 1. Setup Body Parser to handle form submissions (POST requests)
-app.use(express.urlencoded({ extended: true }));
-
-// 2. Setup Session Middleware
-app.use(session({
-  secret: 'team-awesome-secret-key', // In production, use an environment variable!
-  resave: false,
-  saveUninitialized: false,
-  cookie: { 
-    secure: false, // Set to true if using HTTPS
-    maxAge: 1000 * 60 * 60 * 24 // Session expires in 24 hours
-  }
-}));
-
-// Add static files location (for CSS/Images)
-app.use(express.static("static"));
-
-// Use the Pug templating engine
-app.set('view engine', 'pug');
-app.set('views', './app/views');
-
-// Get the functions in the db.js file to use
+const express = require('express');
+const path = require('path');
+const app = express();
+// Import the database connection from the services folder
 const db = require('./services/db');
 
-// Import models
-const { User } = require("./models/user");
-const { Game } = require("./models/listing");
+// Set the view engine to Pug
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, '../views'));
 
+// Serve static files from the 'static' directory
+app.use(express.static(path.join(__dirname, '../static')));
 
-// POST Login - Process the credentials
-app.post("/login", async function(req, res) {
-    const { username, password } = req.body;
+// --- MIDDLEWARE ---
+// Parse URL-encoded bodies (as sent by HTML forms)
+app.use(express.urlencoded({ extended: true }));
+// Parse JSON bodies (as sent by API clients/fetch)
+app.use(express.json());
 
-    try {
-        // 1. Find the user in the database
-        const sql = "SELECT * FROM Users WHERE username = ?";
-        const results = await db.query(sql, [username]);
-
-        if (results.length > 0) {
-            const user = results[0];
-
-            // 2. Compare the provided password with the hashed password in the DB
-            // Note: For now, if your DB sample data has plain text 'hashed_pass_123', 
-            // bcrypt.compare will fail until you register a user with a real hash.
-            const match = await bcrypt.compare(password, user.password);
-
-            if (match) {
-                // 3. Authentication successful! Store user info in the session
-                req.session.user_id = user.UserID;
-                req.session.username = user.username;
-                req.session.loggedIn = true;
-
-                console.log(`User ${user.username} logged in successfully.`);
-                res.redirect("/"); // Redirect to home page
-            } else {
-                // Password does not match
-                res.render("login", { error: "Invalid username or password." });
-            }
-        } else {
-            // User not found
-            res.render("login", { error: "Invalid username or password." });
-        }
-    } catch (err) {
-        console.error("Login error:", err);
-        res.status(500).send("A server error occurred.");
-    }
-});
-
-// Middleware to make user data available to all PUG templates
+// Mock Authentication Middleware
 app.use((req, res, next) => {
-    // res.locals allows variables to be accessed in any .pug file
-    res.locals.loggedIn = req.session.loggedIn || false;
-    res.locals.username = req.session.username || null;
-    res.locals.userId = req.session.user_id || null;
+    // req.user = { 
+    //     id: 1, 
+    //     nickname: 'alice',
+    //     full_name: 'Alice Smith'
+    // };
+    // res.locals.currentUser = req.user; 
     next();
 });
 
-
 // --- ROUTES ---
 
-// 1. Home Page
-// 1. Home Page - Now fetches categories for the community tags
-app.get("/", async function(req, res) {
+// 1. Home Page - List all games
+app.get('/', async (req, res) => {
     try {
-        // Query the Category table based on your SQL schema
-        const sql = "SELECT CategoryID as id, category_name as name FROM Category";
-        const categories = await db.query(sql);
-        
-        // Pass the categories to the 'index' view
-        res.render("index", { categories: categories });
+        const sql = 'SELECT * FROM games';
+        const [rows] = await db.query(sql);
+        res.render('index', { games: rows });
     } catch (err) {
-        console.error("Error fetching categories for home page:", err);
-        // Fallback to an empty array so the page doesn't crash
-        res.render("index", { categories: [] }); 
+        console.error("Home page error:", err);
+        res.status(500).send('Error loading home page');
     }
 });
 
-// 2. All Listings Page
-app.get("/all-listings", async function(req, res) {
-    try {
-        const games = await Game.getAllGames();
-        res.render('all-listings', { data: games });
-    } catch (err) {
-        console.error("Error fetching listings:", err);
-        res.status(500).send("Database Error.");
-    }
-});
+// 2. Game Detail Page - Fetch specific game with Tags and Platforms
+app.get('/game/:id', async (req, res) => {
+    const gameId = req.params.id;
 
-// 3. Listing Detail Page
-app.get("/listing-single/:id", async function(req, res) {
+    // This query joins games with their tags and platforms via junction tables
+    const sql = `
+        SELECT 
+            g.*, 
+            GROUP_CONCAT(DISTINCT t.name SEPARATOR ', ') AS tags,
+            GROUP_CONCAT(DISTINCT p.name SEPARATOR ', ') AS platforms
+        FROM games g
+        LEFT JOIN game_tags gt ON g.id = gt.game_id
+        LEFT JOIN tags t ON gt.tag_id = t.id
+        LEFT JOIN game_platforms gp ON g.id = gp.game_id
+        LEFT JOIN platforms p ON gp.platform_id = p.id
+        WHERE g.id = ?
+        GROUP BY g.id`;
+
     try {
-        const gameId = req.params.id;
-        const sql = "SELECT GameID as id, game_name as Title, platform, GameCategory as category FROM Listing WHERE GameID = ?";
-        const results = await db.query(sql, [gameId]);
+        const [results] = await db.query(sql, [gameId]);
         
         if (results.length > 0) {
-            const gameData = {
-                ...results[0],
-                Description: "A community-shared game tip.",
-                Price: 0, 
-                User_ID: 1 
-            };
-            res.render('listing-detail', { game: gameData });
+            // Render the 'game-detail.pug' view with the game data
+            res.render('game-detail', { game: results[0] });
         } else {
-            res.status(404).send("Game not found.");
+            res.status(404).send('Game not found');
         }
     } catch (err) {
-        console.error("Error fetching game detail:", err);
-        res.status(500).send("Database Error.");
+        console.error("Database query error:", err);
+        res.status(500).send('Internal Server Error');
     }
 });
 
-// 4. Category Results Page
-app.get("/category/:id", async function(req, res) {
-    try {
-        const catId = req.params.id;
-        const sql = "SELECT * FROM Listing WHERE GameCategory = ?";
-        const listings = await db.query(sql, [catId]);
-        
-        const catSql = "SELECT category_name FROM Category WHERE CategoryID = ?";
-        const catResult = await db.query(catSql, [catId]);
-        const categoryName = catResult.length > 0 ? catResult[0].category_name : "Category";
-
-        res.render('category-results', { 
-            categoryName: categoryName, 
-            listings: listings 
-        });
-    } catch (err) {
-        console.error("Error fetching category results:", err);
-        res.status(500).send("Database Error.");
-    }
+// 3. Category Page - Existing project view
+app.get('/categories', (req, res) => {
+    res.render('categories');
 });
 
-app.get("/", async function(req, res) {
-    try {
-        const categories = await Category.getAllCategories();
-        res.render("index", { categories: categories });
-    } catch (err) {
-        res.status(500).send("Error loading categories.");
-    }
-});
 
-// 5. User Profile Page
-app.get("/user-profile/:id", async function (req, res) {
-    try {
-        const uId = req.params.id;
-        const user = new User(uId);
-        await user.getUserDetails(); 
-        await user.getUserTips();    
-        
-        res.render('user-profile', { user: user });
-    } catch (err) {
-        console.error("Error fetching user profile:", err);
-        res.status(500).send("Database Error.");
-    }
-});
+// --- INTERACTIVE POST ROUTES ---
 
-// GET Login Page
-app.get("/login", function(req, res) {
-    res.render("login");
-});
-
-// GET Logout
-app.get("/logout", function(req, res) {
-    req.session.destroy((err) => {
-        if (err) {
-            return console.log(err);
-        }
-        res.redirect("/");
-    });
-});
-
-// GET Register Page
-app.get("/register", function(req, res) {
-    res.render("register");
-});
-
-// POST Register - Create a new user
-app.post("/register", async function(req, res) {
-    const { username, email, password } = req.body;
+// 1. Submit a Comment
+app.post('/post/:id/comment', async (req, res) => {
+    const postId = req.params.id;
+    const userId = req.user.id; // Comes from our mock middleware
+    const { comment_text } = req.body; // Comes from the form input
 
     try {
-        // 1. Hash the password before saving (Security Requirement)
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-        // 2. Insert into the Users table
-        const sql = "INSERT INTO Users (username, email, password) VALUES (?, ?, ?)";
-        await db.query(sql, [username, email, hashedPassword]);
-
-        // 3. Success: Redirect to login so they can sign in
-        res.redirect("/login");
-    } catch (err) {
-        console.error("Registration error:", err);
-        // Handle duplicate username/email errors specifically if needed
-        res.render("register", { error: "Username or email already exists." });
+        await db.query(
+            'INSERT INTO comments (post_id, user_id, comment_text) VALUES (?, ?, ?)', 
+            [postId, userId, comment_text]
+        );
+        // Refresh the page to show the new comment
+        res.redirect(`/post/${postId}`); 
+    } catch (error) {
+        console.error("Error posting comment:", error);
+        res.status(500).send("Error posting comment");
     }
 });
 
-// Rating routes 
-
-app.post("/listing-single/:id/rate-game", async function(req, res) { 
-
-    const gameId = req.params.id; 
-
-    const { graphics, gameplay, difficulty, story } = req.body; 
-
- 
-
-    await db.query( 
-
-        "INSERT INTO GameRating (GameID, UserID, graphics, gameplay, difficulty, story) VALUES (?, 1, ?, ?, ?, ?)", 
-
-        [gameId, graphics, gameplay, difficulty, story] 
-
-    ); 
-
- 
-
-    res.redirect(`/listing-single/${gameId}`); 
-
-});
-
-// Example logic structure for app/app.js
-app.post('/send-message', async (req, res) => {
-    const { receiverId, listingId, messageText } = req.body;
-    const senderId = req.session.userId; // Ensure middleware handles session check
-
-    if (!senderId) {
-        return res.redirect('/login'); // Requirement: User login
-    }
+// 2. Submit a Reply
+app.post('/comment/:commentId/reply', async (req, res) => {
+    const commentId = req.params.commentId;
+    const userId = req.user.id;
+    const { reply_text, postId } = req.body; // We need postId from a hidden input to know where to redirect
 
     try {
-        const sql = "INSERT INTO messages (sender_id, receiver_id, listing_id, message_text) VALUES (?, ?, ?, ?)";
-        await db.query(sql, [senderId, receiverId, listingId, messageText]);
-        res.redirect(`/listing/${listingId}?success=true`);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Error sending message");
+        await db.query(
+            'INSERT INTO replies (comment_id, user_id, reply_text) VALUES (?, ?, ?)', 
+            [commentId, userId, reply_text]
+        );
+        res.redirect(`/post/${postId}`);
+    } catch (error) {
+        console.error("Error posting reply:", error);
+        res.status(500).send("Error posting reply");
     }
 });
 
+// 3. Submit a Rating
+app.post('/post/:id/rate', async (req, res) => {
+    const postId = req.params.id;
+    const userId = req.user.id;
+    const { rating_value } = req.body; 
 
-// CRITICAL: Export the app for index.js and tests to use.
-// DO NOT ADD app.listen() HERE!
+    try {
+        // Step A: Insert or Update the user's specific rating
+        // The ON DUPLICATE KEY UPDATE ensures a user can only rate once, but can change their mind[cite: 3]
+        await db.query(`
+            INSERT INTO post_ratings (post_id, user_id, rating_value) 
+            VALUES (?, ?, ?) 
+            ON DUPLICATE KEY UPDATE rating_value = ?`, 
+            [postId, userId, rating_value, rating_value]
+        );
+
+        // Step B: Calculate the new average and update the main posts table
+        await db.query(`
+            UPDATE posts 
+            SET total_rating = (SELECT IFNULL(AVG(rating_value), 0) FROM post_ratings WHERE post_id = ?) 
+            WHERE id = ?`, 
+            [postId, postId]
+        );
+
+        res.redirect(`/post/${postId}`);
+    } catch (error) {
+        console.error("Error rating post:", error);
+        res.status(500).send("Error rating post");
+    }
+});
+
+// Export the app object so it can be used by index.js[cite: 1]
 module.exports = app;

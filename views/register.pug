@@ -1,0 +1,30 @@
+extends layout
+
+block content
+  .auth-container
+    .auth-box
+      h1 Join Gamespace
+      p Create an account to join the discussion.
+      
+      form.auth-form(action="/register" method="POST")
+        .form-group
+          label(for="full_name") Full Name
+          input(type="text" name="full_name" id="full_name" placeholder="John Doe" required)
+
+        .form-group
+          label(for="nickname") Nickname (Username)
+          input(type="text" name="nickname" id="nickname" placeholder="ProGamer99" required)
+
+        .form-group
+          label(for="email") Email Address
+          input(type="email" name="email" id="email" placeholder="gamer@example.com" required)
+        
+        .form-group
+          label(for="password") Password
+          input(type="password" name="password" id="password" required)
+        
+        button.btn-primary(type="submit") Create Account
+      
+      .auth-links
+        p Already have an account? 
+          a(href="/login") Log in here

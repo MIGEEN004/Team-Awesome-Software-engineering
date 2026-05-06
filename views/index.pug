@@ -1,0 +1,67 @@
+extends layout
+
+block content
+  .main-homepage-layout
+    //- Left Column: Top Games List
+    .left-column
+      h1.section-title Top 10 Games
+      p.subtitle Ranked by Metacritic Score
+      
+      .games-list
+        if topGames && topGames.length > 0
+          each game, index in topGames
+            .game-card
+              .card-rank
+                span= "#" + (index + 1)
+              
+              //- Properly indented image container
+              .card-left
+                .cover-container
+                  img(
+                    src=`/images/covers/${game.id}.jpg`, 
+                    alt=game.title, 
+                    class="game-cover-img", 
+                    onerror="this.src='/images/default-cover.png'"
+                  )
+
+              .card-mid
+                h2: a(href='/game/' + game.id)= game.title
+                p.description= game.description
+              
+              .card-right
+                .metadata
+                  if game.metacritic_score
+                    span.score-badge= game.metacritic_score
+                  p: strong Tags: 
+                  span= game.tags || 'N/A'
+                  p: strong Platforms: 
+                  span= game.platforms || 'N/A'
+        else
+          p No games found.
+
+    //- Right Column: Trending and Top Posts
+    .right-column
+      .homepage-posts-section
+        .trending-posts
+          h2 Trending Posts (Last 24 Hours)
+          if trendingPosts && trendingPosts.length > 0
+            ul.post-list
+              each post in trendingPosts
+                li.post-item
+                  .post-info
+                    a(href=`/post/${post.id}`).post-link= post.title
+                    p.post-meta by #{post.username} | Rating: #{post.total_rating}
+          else
+            p.no-data No trending posts in the last 24 hours.
+
+        .top-posts
+          h2 Top 10 Posts of All Time
+          if topPosts && topPosts.length > 0
+            ul.post-list
+              each post in topPosts
+                li.post-item
+                  .post-info
+                    a(href=`/post/${post.id}`).post-link= post.title
+                    p.post-meta by #{post.username} | Rating: #{post.total_rating}
+          else
+            p.no-data No top posts available.

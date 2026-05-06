@@ -1,0 +1,34 @@
+extends layout
+
+block content
+  .game-container
+    h1= game.title
+    
+    .game-main-info
+      .cover-photo-placeholder
+        //- Just use the image directly; the placeholder container handles the border and size
+        img(
+          src=`/images/covers/${game.id}.jpg`, 
+          alt=game.title, 
+          class="game-cover-detail", 
+          onerror="this.src='/images/default-cover.png'"
+        )
+      
+      .game-metadata
+        if game.metacritic_score
+            p 
+                strong Metacritic Score: 
+                span= game.metacritic_score
+        p 
+          strong Tags: 
+          span= game.tags || 'None'
+        p 
+          strong Platforms: 
+          span= game.platforms || 'None'
+        p 
+          strong Release Year: 
+          span= game.release_year
+
+    .game-description
+      h2 Description
+      p= game.description

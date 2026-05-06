@@ -1,9 +1,0 @@
-extends layout
-block content
-    h1 GAMESPACE
-    p Welcome to our community exchange platform.
-    
-    h3 Browse by Community Tag
-    .tags-container
-      each cat in categories
-        a.filter-btn(href=`/category/${cat.id}`) #{cat.name}

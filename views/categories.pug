@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  .categories-container
+    section.tags-section
+      h2 Explore by Tags
+      .bubble-grid
+        each tag in tags
+          a.tag-bubble(href=`/tags/${tag.id}`) #{tag.name}
+
+    hr.section-divider
+
+    section.platforms-section
+      h2 Browse by Platform
+      .platform-grid
+        each platform in platforms
+          a.platform-card(href=`/platform/${platform.id}`)
+            span #{platform.name}

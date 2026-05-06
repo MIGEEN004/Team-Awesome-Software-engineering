@@ -1,0 +1,30 @@
+doctype html
+html
+  head
+    title Gamespace
+    link(rel="stylesheet", href="/css/styles.css")
+  body
+    header.banner
+      .logo-container
+        a(href="/")
+          img(src="/images/logo.png", alt="Gamespace Logo")
+      
+      nav.nav-links
+        a(href="/categories") Categories
+        a(href="/games") Games List
+        a(href="/posts") Posts
+        a.nav-write-post(href="/create-post") Write Post
+      
+      .user-actions
+        if currentUser
+          a.auth-link.nav-inbox(href="/inbox") 📥 Inbox
+          a.profile-link(href=`/user/${currentUser.id}`)
+            .circle #{currentUser.nickname.charAt(0).toUpperCase()}
+            span.greeting Hi, #{currentUser.nickname}!
+          a.auth-link.logout-btn(href="/logout") Logout
+        else
+          a.auth-link(href="/login") Login
+          a.auth-link.register-btn(href="/register") Register
+
+    main.container
+      block content

@@ -1,0 +1,39 @@
+extends layout
+
+block content
+  .listing-container
+    h1 All Games
+    each game in games
+      .game-card
+        //- Column 1: The Image
+        .card-left
+          .cover-container
+            img(
+              src=`/images/covers/${game.id}.jpg`, 
+              alt=game.title, 
+              class="game-cover-img", 
+              onerror="this.src='/images/default-cover.png'"
+            )
+        
+        //- Column 2: The Title & Description
+        .card-mid
+          h2
+            a(href='/game/' + game.id)= game.title
+          p.description= game.description
+        
+        //- Column 3: The Metadata
+        .card-right
+          .metadata
+            if game.metacritic_score
+              p 
+                strong Metacritic Score: 
+                span= game.metacritic_score
+            p 
+              strong Tags: 
+              | #{game.tags || 'N/A'}
+            p 
+              strong Platforms: 
+              | #{game.platforms || 'N/A'}
+            p 
+              strong Release Year: 
+              | #{game.release_year}

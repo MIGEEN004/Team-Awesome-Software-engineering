@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  .auth-container
+    .auth-box
+      h1 Welcome Back
+      p Log in to your Gamespace account to post, comment, and rate!
+      
+      form.auth-form(action="/login" method="POST")
+        .form-group
+          label(for="email") Email Address
+          input(type="email" name="email" id="email" placeholder="gamer@example.com" required)
+        
+        .form-group
+          label(for="password") Password
+          input(type="password" name="password" id="password" required)
+        
+        button.btn-primary(type="submit") Log In
+      
+      .auth-links
+        p Don't have an account? 
+          a(href="/register") Register here

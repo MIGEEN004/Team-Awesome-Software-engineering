@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  .inbox-container(style="max-width: 800px; margin: 0 auto; padding: 20px;")
+    h1 Your Inbox
+    hr
+    
+    if messages && messages.length > 0
+      .message-list(style="display: flex; flex-direction: column; gap: 10px;")
+        each msg in messages
+          //- Clicking a message takes you to the full conversation with that sender
+          a.message-card(href=`/messages/${msg.sender_id}` style="display: block; padding: 15px; border: 2px solid #000; text-decoration: none; color: #333; background: #fff;")
+            .msg-header(style="display: flex; justify-content: space-between; margin-bottom: 5px;")
+              strong From: #{msg.sender_name}
+              span(style="color: #666; font-size: 0.85rem;") #{msg.sent_at.toString().split(' GMT')[0]}
+            p(style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;") #{msg.message_text}
+            if !msg.is_read
+              span(style="display: inline-block; margin-top: 5px; background: var(--accent-orange); color: white; padding: 2px 6px; font-size: 0.8rem; border-radius: 4px;") New
+    else
+      p(style="text-align: center; color: #666; font-style: italic;") Your inbox is empty.

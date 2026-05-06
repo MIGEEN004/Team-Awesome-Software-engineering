@@ -1,4 +1,4 @@
-# Game Tips and Tricks: Community Exchange Platform
+# GameSpace
 
 ## Project Overview
 
@@ -58,7 +58,7 @@ docker-compose up --build
 
 3. **Access the Application**:
 * **Web Application**: View the site at [http://localhost:3000](http://127.0.0.1:3000/).
-* **phpMyAdmin**: Manage the database at [http://localhost:8081](http://127.0.0.1:8081).
+* **phpMyAdmin**: Manage the database at [http://localhost:8080](http://127.0.0.1:8080).
 
 
 
@@ -73,4 +73,4 @@ We use the **Scrum methodology** to deliver this project iteratively.
 
 ---
 
-*Last updated for Sprint 2. Further features and documentation will be added as development progresses.*
+

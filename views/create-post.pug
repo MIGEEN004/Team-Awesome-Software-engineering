@@ -1,0 +1,53 @@
+extends layout
+
+block content
+  .create-post-container
+    h1 Write a New Post
+    
+    if currentUser
+      p.posting-as Posting publicly as: <strong>#{currentUser.nickname}</strong>
+
+      form.create-post-form(action="/create-post" method="POST")
+        
+        //- Title Input
+        .form-group
+          label(for="title") Post Title:
+          input(type="text" name="title" id="title" required placeholder="Give your post a catchy title...")
+
+        //- Row for Dropdowns
+        .dropdown-row
+          //- Flair Dropdown
+          .form-group.dropdown-item
+            label(for="flair_id") Flair:
+            select(name="flair_id" id="flair_id")
+              option(value="") -- Select a Flair --
+              each flair in flairs
+                option(value=flair.id)= flair.Flair_Name
+
+          //- Game Dropdown
+          .form-group.dropdown-item
+            label(for="game") Game (Optional):
+            select(name="game" id="game")
+              option(value="") -- Select a Game --
+              each game in games
+                option(value=game.id)= game.title
+
+          //- Platform Dropdown
+          .form-group.dropdown-item
+            label(for="platform") Platform (Optional):
+            select(name="platform" id="platform")
+              option(value="") -- Select a Platform --
+              each platform in platforms
+                option(value=platform.id)= platform.name
+
+        //- Description Textarea
+        .form-group
+          label(for="description") Description:
+          textarea(name="description" id="description" rows="10" required placeholder="What's on your mind?")
+
+        //- Submit Button
+        .form-group
+          button.btn-publish(type="submit") Publish Post
+          
+    else
+      p You must be logged in to create a post.
