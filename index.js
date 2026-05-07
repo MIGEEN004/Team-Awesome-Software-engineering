@@ -106,7 +106,7 @@ app.get('/', async (req, res) => {
   }
 });
 
-// 2. Categories Page[cite: 1]
+// 2. Categories Page
 app.get('/categories', async (req, res) => {
   try {
     const [tags] = await db.query('SELECT * FROM tags');

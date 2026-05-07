@@ -3,18 +3,21 @@ const assert = require('node:assert');
 const test = require('node:test');
 const request = require('supertest');
 
-// Import your Express application. 
-// Because you cleverly exported it using module.exports = app;
-// we can test it directly without running the full server!
+// Import your Express application
 const app = require('../app/app'); 
 
+// --- TEST 1: The Categories Page ---
 test('Community Categories Page - GET /categories', async () => {
-    // 1. Arrange & Act: Use supertest to simulate a GET request to your route
     const response = await request(app).get('/categories');
-    
-    // 2. Assert: Check if the application returns a 200 OK success status
     assert.strictEqual(response.status, 200, 'Expected status code to be 200');
-    
-    // 3. Assert: Verify that the response is sending back HTML (your rendered PUG view)
     assert.match(String(response.headers['content-type']), /html/);
+});
+
+// --- TEST 2: 404 Error Handling (NEW) ---
+test('404 Error Handling - GET /this-page-does-not-exist', async () => {
+    // 1. Arrange & Act: Request a random route that you haven't defined in app.js
+    const response = await request(app).get('/this-page-does-not-exist');
+    
+    // 2. Assert: Express should automatically catch this and return a 404 Not Found status
+    assert.strictEqual(response.status, 404, 'Expected status code to be 404 for missing pages');
 });
