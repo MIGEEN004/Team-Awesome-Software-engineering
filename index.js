@@ -763,3 +763,6 @@ app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);
   console.log(`Test Game Link: http://localhost:${PORT}/game/1`);
 });
+
+
+module.exports = app;
