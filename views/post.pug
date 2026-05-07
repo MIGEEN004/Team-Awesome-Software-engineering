@@ -2,8 +2,8 @@ extends layout
 
 block content
   .post-page-layout
-    //- Nickname tag
-    .author-nickname= post.nickname
+    .author-nickname
+     a(href=`/user/${post.user_id}`)= post.nickname
 
     .post-header-row
       .title-box
@@ -13,8 +13,14 @@ block content
         p 🏷️ #{post.Flair_Name || 'General'}
         p 🎮 #{post.game_name}
         p 💻 #{post.platform_name}
-        //- Removes everything after 'GMT'
         p 📅 #{post.post_timestamp.toString().split(' GMT')[0]}
+
+    //- NEW: Post Management (Only for the author)
+    if currentUser && currentUser.id == post.user_id
+      .post-management-controls
+        a.btn-edit(href=`/post/${post.id}/edit`) ✏️ Edit Post
+        form(action=`/post/${post.id}/delete` method="POST" onsubmit="return confirm('Are you sure you want to delete this post?')")
+          button.btn-delete(type="submit") 🗑️ Delete Post
 
     .description-box
       h4 Post description:
@@ -22,62 +28,80 @@ block content
 
     .rating-row
       .rating-box
-        strong Total Rating: 
+        strong Total Stars: 
         span= post.total_rating
       
-      //- NEW: Rating Form
       if currentUser
-        .rating-form-box(style="margin-top: 10px;")
+        .rating-form-box
           form(action=`/post/${post.id}/rate` method="POST")
-            label(for="rating") Rate this post: 
-            select(name="rating_value" id="rating" required)
-              option(value="" disabled selected) Select...
-              option(value="5") 5 - Excellent
-              option(value="4") 4 - Good
-              option(value="3") 3 - Average
-              option(value="2") 2 - Poor
-              option(value="1") 1 - Terrible
-            button(type="submit" style="margin-left: 10px;") Submit Rating
+            button.star-button(type="submit") ⭐ Star this Post
 
     .comments-container
       h3 Community Discussion
       hr
-      
-      //- NEW: Comment Form
+
       if currentUser
-        .add-comment-box(style="margin-bottom: 20px;")
+        .add-comment-box
           h4 Leave a Comment (as #{currentUser.nickname})
           form(action=`/post/${post.id}/comment` method="POST")
-            textarea(name="comment_text" rows="3" placeholder="Write your thoughts here..." required style="width: 100%; margin-bottom: 10px;")
+            textarea.comment-textarea(name="comment_text" rows="3" placeholder="Write your thoughts here..." required)
             button(type="submit") Post Comment
             
       hr
 
       if comments && comments.length > 0
         each comment in comments
-          .comment-block(style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;")
+          .comment-block
             .comment-content
-              strong= comment.nickname
-              //- Applied cleanup to comment timestamps as well[cite: 4]
+              strong
+              a(href=`/user/${comment.user_id}`)= comment.nickname
               span.timestamp  — #{comment.comment_timestamp.toString().split(' GMT')[0]}
-              p= comment.comment_text
+              p(id=`text-${comment.id}`)= comment.comment_text
+              
+              //- NEW: Comment Management (Edit/Delete)
+              if currentUser && currentUser.id == comment.user_id
+                .comment-actions
+                  button.btn-tiny(onclick=`toggleEditComment(${comment.id})`) Edit
+                  form(action=`/comment/${comment.id}/delete` method="POST" style="display:inline;")
+                    input(type="hidden" name="postId" value=post.id)
+                    button.btn-tiny.btn-danger(type="submit") Delete
+
+                //- Hidden inline edit form
+                form(id=`edit-form-${comment.id}` action=`/comment/${comment.id}/edit` method="POST" style="display:none; margin-top: 10px;")
+                  input(type="hidden" name="postId" value=post.id)
+                  textarea.comment-textarea(name="comment_text")= comment.comment_text
+                  button(type="submit") Update
+                  button(type="button" onclick=`toggleEditComment(${comment.id})`) Cancel
             
             if replies && replies.some(r => r.comment_id == comment.id)
-              .replies-list(style="margin-left: 20px; border-left: 2px solid #eee; padding-left: 10px;")
+              .replies-list
                 each reply in replies
                   if reply.comment_id == comment.id
                     .reply-item
-                      strong= reply.nickname
+                      strong
+                      a(href=`/user/${reply.user_id}`)= reply.nickname
                       span.timestamp  — #{reply.reply_timestamp.toString().split(' GMT')[0]}
                       p= reply.reply_text
                       
-            //- NEW: Reply Form
             if currentUser
-              .add-reply-box(style="margin-left: 20px; margin-top: 10px;")
+              .add-reply-box
                 form(action=`/comment/${comment.id}/reply` method="POST")
-                  //- Hidden input so the backend knows which post to redirect back to
                   input(type="hidden" name="postId" value=post.id)
-                  textarea(name="reply_text" rows="2" placeholder="Write a reply..." required style="width: 100%; margin-bottom: 5px;")
+                  textarea.reply-textarea(name="reply_text" rows="2" placeholder="Write a reply..." required)
                   button(type="submit") Reply
       else
         p.no-comments No thoughts yet. Be the first to comment!
+
+  //- Script to toggle the comment edit form visibility
+  script.
+    function toggleEditComment(commentId) {
+      const form = document.getElementById('edit-form-' + commentId);
+      const text = document.getElementById('text-' + commentId);
+      if (form.style.display === 'none') {
+        form.style.display = 'block';
+        text.style.display = 'none';
+      } else {
+        form.style.display = 'none';
+        text.style.display = 'block';
+      }
+    }

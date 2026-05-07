@@ -1,30 +1,56 @@
 doctype html
-html
+html(lang="en")
   head
-    title Gamespace
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Gamespace | Community for Gamers
     link(rel="stylesheet", href="/css/styles.css")
+    //- Optional: Add a favicon link here
+  
   body
-    header.banner
-      .logo-container
-        a(href="/")
-          img(src="/images/logo.png", alt="Gamespace Logo")
-      
-      nav.nav-links
-        a(href="/categories") Categories
-        a(href="/games") Games List
-        a(href="/posts") Posts
-        a.nav-write-post(href="/create-post") Write Post
-      
-      .user-actions
-        if currentUser
-          a.auth-link.nav-inbox(href="/inbox") 📥 Inbox
-          a.profile-link(href=`/user/${currentUser.id}`)
-            .circle #{currentUser.nickname.charAt(0).toUpperCase()}
-            span.greeting Hi, #{currentUser.nickname}!
-          a.auth-link.logout-btn(href="/logout") Logout
-        else
-          a.auth-link(href="/login") Login
-          a.auth-link.register-btn(href="/register") Register
+    .page-wrapper
+      //- Main Navigation Header
+      header.main-header
+        .header-content
+          .brand-section
+            a(href="/")
+              img(src="/images/logo.png", alt="Gamespace Home", class="site-logo")
+          
+          //- Central Search Functionality
+          .search-bar-section
+            form(action="/search" method="GET", class="search-form")
+              input(type="text" name="q" placeholder="Search for games, posts, or users..." required)
+              button(type="submit") 🔍
 
-    main.container
-      block content
+          //- Primary Navigation
+          nav.primary-nav
+            ul.nav-list
+              li: a(href="/categories") Categories
+              li: a(href="/games") Games
+              li: a(href="/posts") Forum
+              li: a.btn-write(href="/create-post") + Write Post
+
+          //- User Account Actions
+          .user-utilities
+            if currentUser
+              .logged-in-actions
+                a.icon-link(href="/inbox", title="My Inbox") 📥
+                a.profile-capsule(href=`/user/${currentUser.id}`)
+                  .avatar-circle #{currentUser.nickname.charAt(0).toUpperCase()}
+                  span.nickname-label= currentUser.nickname
+                a.logout-link(href="/logout") Logout
+            else
+              .auth-buttons
+                a.login-link(href="/login") Login
+                a.register-btn(href="/register") Join Gamespace
+
+      //- Main Content Area
+      main.main-content
+        block content
+
+      //- Global Footer
+      footer.main-footer
+        .footer-content
+          .footer-info
+            p &copy; 2024 Team-Awesome. All rights reserved.
+            p.footer-tagline Connecting gamers through reviews and discussions.

@@ -1168,3 +1168,648 @@ body {
   text-decoration: underline;
   color: var(--accent-orange);
 }
+
+/* --- POST PAGE STYLING --- */
+
+.rating-form-box {
+  margin-top: 10px;
+}
+
+.star-button {
+  background-color: var(--meta-yellow);
+  color: #333;
+  border: 1px solid #000;
+  padding: 5px 15px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 4px;
+  transition: transform 0.1s;
+}
+
+.star-button:hover {
+  background-color: var(--accent-orange);
+  transform: scale(1.05);
+}
+
+.add-comment-box {
+  margin-bottom: 20px;
+}
+
+.comment-textarea {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-sizing: border-box; /* Ensures padding doesn't affect width */
+}
+
+.comment-block {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid var(--border-color);
+  background-color: white;
+  border-radius: 8px;
+}
+
+.replies-list {
+  margin-left: 20px;
+  border-left: 3px solid var(--light-gray);
+  padding-left: 15px;
+  margin-top: 10px;
+}
+
+.reply-item {
+  margin-bottom: 10px;
+}
+
+.add-reply-box {
+  margin-left: 20px;
+  margin-top: 15px;
+}
+
+.reply-textarea {
+  width: 100%;
+  margin-bottom: 5px;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.timestamp {
+  color: #888;
+  font-size: 0.85rem;
+  margin-left: 5px;
+}
+
+
+/* --- SEARCH BAR STYLING --- */
+.search-container form {
+  display: flex;
+  background: white;
+  border-radius: 20px;
+  padding: 5px 15px;
+  border: 1px solid var(--border-color);
+}
+
+.search-container input {
+  border: none;
+  padding: 5px;
+  outline: none;
+  width: 250px;
+}
+
+.search-container button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+/* --- SEARCH RESULTS PAGE --- */
+.results-section {
+  margin-top: 30px;
+}
+
+.results-section h2 {
+  color: var(--primary-blue);
+  margin-bottom: 10px;
+}
+
+.no-results {
+  font-style: italic;
+  color: #777;
+  padding: 20px 0;
+}
+
+.search-results-page h1 {
+  border-bottom: 2px solid var(--accent-orange);
+  padding-bottom: 10px;
+}
+
+
+.post-controls {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.btn-delete, .btn-danger {
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn-tiny {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  margin-right: 5px;
+}
+
+.comment-actions {
+  margin-top: 5px;
+}
+
+
+/* --- OVERHAULED LAYOUT STYLES --- */
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Keeps footer at bottom */
+}
+
+.main-header {
+  background-color: var(--primary-blue);
+  border-bottom: 4px solid var(--accent-orange);
+  padding: 15px 0;
+  color: white;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.brand-section .site-logo {
+  height: 45px;
+}
+
+.search-form {
+  display: flex;
+  background: white;
+  border-radius: 25px;
+  padding: 5px 15px;
+  width: 300px;
+}
+
+.search-form input {
+  border: none;
+  flex-grow: 1;
+  outline: none;
+  padding: 5px;
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+  margin: 0;
+}
+
+.nav-list a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav-list a.btn-write {
+  background-color: var(--accent-orange);
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.user-utilities .profile-capsule {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 5px 15px;
+  border-radius: 20px;
+}
+
+.avatar-circle {
+  width: 28px;
+  height: 28px;
+  background-color: var(--accent-orange);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.main-content {
+  flex: 1; /* Grows to fill available space */
+  max-width: 1200px;
+  width: 100%;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.main-footer {
+  background-color: #222;
+  color: #999;
+  padding: 40px 0;
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.footer-links a {
+  color: #999;
+  margin-left: 20px;
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: white;
+}
+
+/* --- OVERHAULED HEADER & NAVIGATION --- */
+
+.main-header {
+  background-color: var(--primary-blue);
+  border-bottom: 4px solid var(--accent-orange);
+  padding: 0; /* Vertical padding handled by content height */
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-content {
+  max-width: 1400px; /* Wider for a more "expansive" feel */
+  height: 80px; /* Fixed height for consistency */
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+  gap: 50px; /* Consistent, large gaps between major sections */
+}
+
+/* 1. Brand Section */
+.brand-section {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.site-logo {
+  height: 50px;
+  transition: transform 0.2s ease;
+}
+
+.site-logo:hover {
+  transform: scale(1.05);
+}
+
+/* 2. Search Section - The "Expanding" Center */
+.search-bar-section {
+  flex: 1; /* Takes up all available space in the middle */
+  max-width: 500px; /* Limits the search bar from getting too wide on large screens */
+}
+
+.search-form {
+  display: flex;
+  background: white;
+  border-radius: 8px; /* Modern slightly rounded corners */
+  padding: 4px 12px;
+  border: 1px solid var(--border-color);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.search-form:focus-within {
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+}
+
+.search-form input {
+  border: none;
+  flex-grow: 1;
+  outline: none;
+  padding: 8px;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.search-form button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0 5px;
+  display: flex;
+  align-items: center;
+}
+
+/* 3. Primary Navigation */
+.primary-nav {
+  flex-shrink: 0;
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  gap: 35px; /* Spacious gaps between links */
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.nav-list a {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+  position: relative;
+}
+
+.nav-list a:hover {
+  color: white;
+}
+
+/* Underline effect on hover */
+.nav-list a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -5px;
+  left: 0;
+  background-color: var(--accent-orange);
+  transition: width 0.2s ease;
+}
+
+.nav-list a:hover::after {
+  width: 100%;
+}
+
+/* Call to Action: Write Post */
+.nav-list a.btn-write {
+  background-color: var(--accent-orange);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+}
+
+.nav-list a.btn-write:hover {
+  background-color: #ff9d26;
+  transform: translateY(-1px);
+}
+
+.nav-list a.btn-write::after {
+  display: none; /* No underline for button */
+}
+
+/* 4. User Utilities */
+.user-utilities {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logged-in-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile-capsule {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 6px 16px 6px 8px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.2s ease;
+}
+
+.profile-capsule:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  background-color: var(--accent-orange);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* --- POST LIST (FORUM) STYLING --- */
+
+.posts-container {
+  max-width: 1000px; /* Limits width for better readability on desktop */
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.posts-container h1 {
+  margin-bottom: 30px;
+  color: var(--primary-blue);
+  border-bottom: 2px solid var(--accent-orange);
+  padding-bottom: 10px;
+  display: inline-block;
+}
+
+.post-card {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: 25px; /* Adds consistent breathing room between the three columns */
+}
+
+.post-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-color: var(--accent-orange);
+}
+
+/* 1. Left Column: Avatar */
+.post-card .card-left {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle-avatar {
+  width: 60px;
+  height: 60px;
+  background-color: var(--primary-blue);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: 2px solid var(--accent-orange);
+}
+
+/* 2. Middle Column: Title & Author */
+.post-card .card-mid {
+  flex: 2; /* Takes up more space than the right column */
+}
+
+.post-card .card-mid h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.4rem;
+}
+
+.post-card .card-mid h2 a {
+  text-decoration: none;
+  color: var(--primary-blue);
+}
+
+.post-card .card-mid h2 a:hover {
+  color: var(--accent-orange);
+}
+
+.post-username {
+  margin: 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* 3. Right Column: Metadata (Date, Flair, etc.) */
+.post-card .card-right {
+  flex: 1;
+  border-left: 1px solid var(--border-color);
+  padding-left: 20px;
+  min-width: 200px;
+}
+
+.post-card .metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.post-card .metadata p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #555;
+  white-space: nowrap; /* Prevents awkward line breaks for short tags */
+}
+
+.post-card .metadata strong {
+  color: #333;
+  width: 75px;
+  display: inline-block;
+}
+
+/* --- RESPONSIVE HEADER FIX --- */
+
+.main-header {
+  background-color: var(--primary-blue);
+  border-bottom: 4px solid var(--accent-orange);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+}
+
+.header-content {
+  max-width: 1400px;
+  height: 80px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 20px; /* Reduced padding from 40px to save space */
+  gap: clamp(10px, 2vw, 40px); /* Responsive gap: scales between 10px and 40px */
+  overflow: hidden; /* Prevents internal elements from forcing a scroll */
+}
+
+/* 1. Search Section - Now handles shrinking properly */
+.search-bar-section {
+  flex: 1; 
+  min-width: 120px; /* Allows the bar to shrink significantly before overflowing */
+  max-width: 450px;
+}
+
+.search-form {
+  display: flex;
+  background: white;
+  border-radius: 8px;
+  padding: 4px 10px;
+  border: 1px solid var(--border-color);
+  width: 100%; /* Ensure it fills its shrinking container */
+}
+
+.search-form input {
+  border: none;
+  flex: 1;
+  min-width: 0; /* CRITICAL: Allows the input to shrink below its default size */
+  outline: none;
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+/* 2. Primary Navigation - Spacing adjustments */
+.nav-list {
+  display: flex;
+  gap: clamp(10px, 1.5vw, 25px); /* Responsive gaps for links */
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  white-space: nowrap; /* Keeps links on one line */
+}
+
+/* 3. User Utilities - Ensure this stays on screen */
+.user-utilities {
+  flex-shrink: 0; /* Prevents the user area from being squashed */
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logged-in-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 4. Media Query for smaller screens */
+@media (max-width: 1000px) {
+  .nickname-label {
+    display: none; /* Hides "Hi, Name" text on smaller screens to keep the Logout button visible */
+  }
+  
+  .profile-capsule {
+    padding: 4px; /* Shrink capsule padding */
+  }
+
+  .nav-list a:not(.btn-write) {
+    font-size: 0.85rem; /* Shrink font size slightly */
+  }
+}

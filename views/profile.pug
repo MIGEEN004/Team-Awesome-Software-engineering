@@ -14,7 +14,17 @@ block content
         else
           p No bio provided.
         
-        //- Messaging Button (Only show if logged in AND it's not their own profile)
+        //- NEW: Bio Editing (Only show if it's the user's own profile)
+        if currentUser && currentUser.id == user.id
+          button.btn-edit-bio(onclick="document.getElementById('edit-bio-form').style.display='block'") Edit Bio
+          
+          form#edit-bio-form(action="/profile/edit" method="POST")
+            textarea(name="bio" rows="3")= user.bio
+            .form-actions
+              button(type="submit") Save Changes
+              button(type="button" onclick="document.getElementById('edit-bio-form').style.display='none'") Cancel
+        
+        //- Messaging Button (Only show if it's not their own profile)
         if currentUser && currentUser.id != user.id
           a.btn-message(href=`/messages/${user.id}`) Send Message
           
@@ -37,13 +47,10 @@ block content
             .post-card
               .post-left
                 h4
-                  //- Made the title clickable so you can view the post
                   a(href=`/post/${post.id}`)= post.title
                 p.post-date= new Date(post.post_timestamp).toLocaleDateString()
               
               .post-right
-                p.post-flair Post flair: #{post.Flair_Name ? post.Flair_Name : 'None'}
-                p.post-feedback Rating: #{post.total_rating} / 5
+                p.post-flair Post flair: #{post.Flair_Name || 'General'}
         else
-          .no-posts
-            p This user has not posted anything yet.
+          p.no-posts This user hasn't posted anything yet.

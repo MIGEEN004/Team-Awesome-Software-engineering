@@ -442,37 +442,47 @@ app.post('/comment/:commentId/reply', async (req, res) => {
     }
 });
 
-// 3. Submit a Rating
+// Updated Star/Rating Route in index.js
 app.post('/post/:id/rate', async (req, res) => {
     const postId = req.params.id;
     const userId = req.user.id;
-    const { rating_value } = req.body; 
 
     try {
-        // Step A: Insert or Update the user's specific rating
-        // The ON DUPLICATE KEY UPDATE ensures a user can only rate once, but can change their mind[cite: 3]
-        await db.query(`
-            INSERT INTO post_ratings (post_id, user_id, rating_value) 
-            VALUES (?, ?, ?) 
-            ON DUPLICATE KEY UPDATE rating_value = ?`, 
-            [postId, userId, rating_value, rating_value]
+        // 1. Check if the user has already starred this post
+        const [existing] = await db.query(
+            'SELECT * FROM post_ratings WHERE post_id = ? AND user_id = ?',
+            [postId, userId]
         );
 
-        // Step B: Calculate the new average and update the main posts table
+        if (existing.length > 0) {
+            // 2a. If they already starred it, remove the star (Toggle off)
+            await db.query(
+                'DELETE FROM post_ratings WHERE post_id = ? AND user_id = ?',
+                [postId, userId]
+            );
+        } else {
+            // 2b. If they haven't starred it, add a star (Toggle on)
+            // We use '1' as a placeholder value since we are just counting rows
+            await db.query(
+                'INSERT INTO post_ratings (post_id, user_id, rating_value) VALUES (?, ?, 1)',
+                [postId, userId]
+            );
+        }
+
+        // 3. Recalculate the TOTAL COUNT of stars and update the posts table
         await db.query(`
             UPDATE posts 
-            SET total_rating = (SELECT IFNULL(AVG(rating_value), 0) FROM post_ratings WHERE post_id = ?) 
+            SET total_rating = (SELECT COUNT(*) FROM post_ratings WHERE post_id = ?) 
             WHERE id = ?`, 
             [postId, postId]
         );
 
         res.redirect(`/post/${postId}`);
     } catch (error) {
-        console.error("Error rating post:", error);
-        res.status(500).send("Error rating post");
+        console.error("Error starring post:", error);
+        res.status(500).send("Error starring post");
     }
 });
-
 
 // --- ACTUAL AUTHENTICATION LOGIC ---
 
@@ -642,6 +652,111 @@ app.post('/messages/:otherUserId', async (req, res) => {
         res.status(500).send("Error sending message");
     }
 });
+
+// --- SEARCH ROUTE ---
+app.get('/search', async (req, res) => {
+    const query = req.query.q;
+
+    if (!query) {
+        return res.redirect('/');
+    }
+
+    // SQL for searching games
+    const gamesSql = `
+        SELECT g.*, 
+               GROUP_CONCAT(DISTINCT t.name SEPARATOR ', ') AS tags,
+               GROUP_CONCAT(DISTINCT p.name SEPARATOR ', ') AS platforms
+        FROM games g
+        LEFT JOIN game_tags gt ON g.id = gt.game_id
+        LEFT JOIN tags t ON gt.tag_id = t.id
+        LEFT JOIN game_platforms gp ON g.id = gp.game_id
+        LEFT JOIN platforms p ON gp.platform_id = p.id
+        WHERE g.title LIKE ? OR g.description LIKE ?
+        GROUP BY g.id`;
+
+    // SQL for searching posts
+    const postsSql = `
+        SELECT p.*, u.nickname AS username, f.Flair_Name AS flair
+        FROM posts p
+        JOIN users u ON p.user_id = u.id
+        LEFT JOIN flairs f ON p.flair_id = f.id
+        WHERE p.title LIKE ? OR p.description LIKE ?
+        ORDER BY p.post_timestamp DESC`;
+
+    const searchParam = `%${query}%`;
+
+    try {
+        const [[gameResults], [postResults]] = await Promise.all([
+            db.query(gamesSql, [searchParam, searchParam]),
+            db.query(postsSql, [searchParam, searchParam])
+        ]);
+
+        res.render('search-results', { 
+            title: `Search Results for "${query}"`,
+            query,
+            gameResults,
+            postResults
+        });
+    } catch (error) {
+        console.error("Search error:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+app.post('/profile/edit', async (req, res) => {
+    if (!req.user) return res.redirect('/login');
+    const { bio } = req.body;
+    try {
+        await db.query('UPDATE users SET bio = ? WHERE id = ?', [bio, req.user.id]);
+        res.redirect(`/user/${req.user.id}`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error updating bio");
+    }
+});
+
+// Show Edit Form
+app.get('/post/:id/edit', async (req, res) => {
+    const [result] = await db.query('SELECT * FROM posts WHERE id = ?', [req.params.id]);
+    if (result.length === 0 || result[0].user_id !== req.user.id) return res.redirect('/');
+    
+    const [flairs] = await db.query('SELECT * FROM flairs');
+    res.render('create-post', { title: 'Edit Post', post: result[0], flairs, isEditing: true });
+});
+
+// Handle Update
+app.post('/post/:id/edit', async (req, res) => {
+    const { title, description, flair_id } = req.body;
+    await db.query(
+        'UPDATE posts SET title = ?, description = ?, flair_id = ? WHERE id = ? AND user_id = ?',
+        [title, description, flair_id, req.params.id, req.user.id]
+    );
+    res.redirect(`/post/${req.params.id}`);
+});
+
+// Handle Delete
+app.post('/post/:id/delete', async (req, res) => {
+    await db.query('DELETE FROM posts WHERE id = ? AND user_id = ?', [req.params.id, req.user.id]);
+    res.redirect('/posts');
+});
+
+
+// Edit Comment
+app.post('/comment/:id/edit', async (req, res) => {
+    const { comment_text, postId } = req.body;
+    await db.query('UPDATE comments SET comment_text = ? WHERE id = ? AND user_id = ?', 
+        [comment_text, req.params.id, req.user.id]);
+    res.redirect(`/post/${postId}`);
+});
+
+// Delete Comment
+app.post('/comment/:id/delete', async (req, res) => {
+    const { postId } = req.body;
+    await db.query('DELETE FROM comments WHERE id = ? AND user_id = ?', 
+        [req.params.id, req.user.id]);
+    res.redirect(`/post/${postId}`);
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

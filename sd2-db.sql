@@ -310,9 +310,15 @@ INSERT INTO flairs (Flair_Name) VALUES
 ('Memes');
 
 INSERT INTO posts (user_id, title, description, flair_id, game, platform, post_timestamp, total_rating) VALUES
-(1, 'My First Post', 'This is the description for my first post.', 1, 1, 1, CURRENT_TIMESTAMP, 4.5),
-(2, 'Great Game!', 'I just finished playing this amazing game.', 3, 2, 2, CURRENT_TIMESTAMP, 4.8),
-(3, 'Strategy Tips', 'Here are some tips for improving your strategy skills.', 6, 3, 3, CURRENT_TIMESTAMP, 4.2);
+(4, 'Why Breath of the Wild is a masterpiece', 'The physics engine and open-world exploration completely changed how I look at adventure games. Finding Koroks never gets old!', 3, 1, 10, CURRENT_TIMESTAMP, 45),
+(1, 'Witcher 3 Next-Gen Update is gorgeous', 'Just booted up the next-gen update. The ray tracing makes Novigrad look absolutely stunning at night. Highly recommend replaying it.', 1, 9, 19, CURRENT_TIMESTAMP, 32),
+(3, 'Red Dead Redemption 2 - Arthur Morgan', 'Arthur Morgan is arguably the best written protagonist in gaming history. The character development throughout the story is just brilliant.', 3, 23, 14, CURRENT_TIMESTAMP, 88),
+(2, 'Elden Ring build advice needed', 'I am struggling with Malenia. Should I respec to a bleed build or stick with pure strength? Any tips on dodging her Waterfowl Dance?', 2, 6, 15, CURRENT_TIMESTAMP, 15),
+(4, 'Should I buy a PS4 just for Bloodborne?', 'I mainly game on PC but Bloodborne looks so good. Is it worth buying a used console just for this one game?', 2, 33, 14, CURRENT_TIMESTAMP, 8),
+(1, 'Definitive guide to Stardew Valley Year 1', 'Focus on potatoes in Spring, blueberries in Summer, and cranberries in Fall. Always upgrade your watering can when the forecast predicts rain!', 5, 15, 1, CURRENT_TIMESTAMP, 112),
+(3, 'Age of Empires II - Fast Castle build order', 'Here is my standard 27-population fast castle build order for playing Franks. Make sure to push your deer early!', 5, 50, 1, CURRENT_TIMESTAMP, 24),
+(2, 'When you finally beat that one Dark Souls boss', 'We all know the feeling. Hands shaking, heart pounding, jumping out of your chair. Praise the sun! \\[T]/', 6, 16, 13, CURRENT_TIMESTAMP, 205),
+(1, 'Minecraft 1.20 Update thoughts?', 'What does everyone think of the new armor trims and cherry blossom biomes? I think it adds so much cozy life to the world.', 1, 7, 1, CURRENT_TIMESTAMP, 41);
 
 INSERT INTO comments (post_id, user_id, comment_text, comment_timestamp) VALUES
 (1, 2, 'Great post! I enjoyed reading it.', CURRENT_TIMESTAMP),
@@ -325,6 +331,6 @@ INSERT INTO replies (comment_id, user_id, reply_text) VALUES
 (1, 1, 'Thanks, Bob! Glad you liked it.'),
 (1, 4, 'I agree with Bob, very well written.');
 
--- Change this in your sd2-db.sql or run this command:
-ALTER TABLE posts MODIFY total_rating DECIMAL(3,1) DEFAULT 0.0;
+-- Run this to change the column to an integer for counting stars
+ALTER TABLE posts MODIFY total_rating INT DEFAULT 0;
 
